@@ -10,7 +10,7 @@ book:
     - index.qmd
     - 1_import.qmd
     - 2_ego_variables.qmd
-  repo-url: https://github.com/stigmaRverse/stigmaRdata
+  repo-url: https://github.com/follhim/sgm_networks_study
   repo-actions: [issue, source]
 
 format:
@@ -21,10 +21,3 @@ format:
       - lumen
       dark:
       - darkly
-  pdf:
-    documentclass: scrreprt
-
-execute:
-  freeze: auto
-
-bibliography: references.bib

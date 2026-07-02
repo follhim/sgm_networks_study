@@ -10,36 +10,6 @@
     ]
   },
   {
-    "objectID": "intro.html",
-    "href": "intro.html",
-    "title": "1  Raw Data & Variable Names",
-    "section": "",
-    "text": "2 Preparations\nIn stage 1, we import the raw dataset and make any necessary revisions to variable names.",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Raw Data & Variable Names</span>"
-    ]
-  },
-  {
-    "objectID": "summary.html",
-    "href": "summary.html",
-    "title": "2  Summary",
-    "section": "",
-    "text": "In summary, this book has no content whatsoever.\n\n1 + 1\n\n[1] 2",
-    "crumbs": [
-      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Summary</span>"
-    ]
-  },
-  {
-    "objectID": "references.html",
-    "href": "references.html",
-    "title": "References",
-    "section": "",
-    "text": "Knuth, Donald E. 1984. “Literate Programming.” Comput.\nJ. 27 (2): 97–111. https://doi.org/10.1093/comjnl/27.2.97.",
-    "crumbs": [
-      "References"
-    ]
-  },
-  {
     "objectID": "index.html#spot-any-errors",
     "href": "index.html#spot-any-errors",
     "title": "SGM Network Study Dataset",
@@ -47,16 +17,6 @@
     "text": "Spot any errors?\nOpen an issue in the corresponding chapter you are in. You can find the GitHub button on the top right. From there, you can detail what the problem is, and someone will work to resolve the issue.",
     "crumbs": [
       "Preface"
-    ]
-  },
-  {
-    "objectID": "intro.html#packages",
-    "href": "intro.html#packages",
-    "title": "1  Raw Data & Variable Names",
-    "section": "Packages",
-    "text": "Packages\n\n\nClick to see code\npacman::p_load(tidyverse, haven, here, memisc)",
-    "crumbs": [
-      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Raw Data & Variable Names</span>"
     ]
   },
   {
@@ -130,11 +90,11 @@
     ]
   },
   {
-    "objectID": "1_import.html#removing-other-participants",
-    "href": "1_import.html#removing-other-participants",
+    "objectID": "1_import.html#save-results",
+    "href": "1_import.html#save-results",
     "title": "1  Raw Data & Initial Cleaning",
-    "section": "Removing Other Participants",
-    "text": "Removing Other Participants",
+    "section": "Save Results",
+    "text": "Save Results\n\nsaveRDS(p1_data, \"work_data/p1_data.Rds\")",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Raw Data & Initial Cleaning</span>"
     ]

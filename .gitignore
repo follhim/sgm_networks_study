@@ -9,4 +9,4 @@ work_data/*
 .sav*
 .Rds*
 
-.environ*
+.renviron*
