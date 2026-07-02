@@ -1,0 +1,16 @@
+# Preface {.unnumbered}
+
+The purpose of this website is to document the data cleaning workflow for the **SGM Network Study Dataset**.
+
+This website contains the full data cleaning process from start to finish. The completed dataset can be found in a secure **Box** folder only accessible to approved researchers at the __Ecologies of Liberation Lab__ at University of Illinois. 
+
+As an ego network dataset, our data cleaning and scoring also contains uncommon workflows to score and prepare network data. 
+
+You can also find notes from the latest edits on GitHub. 
+
+:::callout-important
+All code and data are processed locally. At no time is data stored on GitHub, even temporarily using memory.
+:::
+
+## Spot any errors?
+Open an issue in the corresponding chapter you are in. You can find the GitHub button on the top right. From there, you can detail what the problem is, and someone will work to resolve the issue. 

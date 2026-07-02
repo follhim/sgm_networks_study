@@ -1,0 +1,67 @@
+---
+title: "Raw Data & Initial Cleaning"
+format:
+  html: 
+    toc: true
+    toc-depth: 6
+    embed-resources: true
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+In stage 1, we import the raw dataset and make any necessary revisions to variable names. 
+
+## Preparations
+### Packages
+```{r}
+pacman::p_load(tidyverse, haven, here, memisc)
+```
+
+## Import Dataset
+```{r}
+p1_data <- read_sav(Sys.getenv("RAW_PATH"))
+```
+
+## Codebook
+We will generate a .txt file codebook. 
+
+```{r}
+#| eval: FALSE
+Write(codebook(p1_data),
+      file = "output_txt/raw_codebook.txt")
+```
+
+You can find the raw codebook in the output_txt folder. 
+
+## Lowercase All Variable Names
+
+```{r}
+names(p1_data) <- tolower(names(p1_data))
+```
+
+## Removing Duplicates
+
+Here we will remove all resposnes that are exactly the same, which can be **truly** consider duplicates. 
+
+```{r}
+duplicated(p1_data)
+```
+
+Here we can see that there are no direct duplicates. So we will keep all participants here.
+
+## Creating an ID variable
+
+```{r}
+p1_data$internal_id <- 1:(nrow(p1_data))
+
+head(p1_data$internal_id)
+```
+
+We create our own ID variable, but in this case we just made it correspond to their row number.
+
+## Save Results
+```{r}
+saveRDS(p1_data, "work_data/p1_data.Rds")
+```
+

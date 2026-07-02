@@ -1,0 +1,30 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "SGM Network Study Dataset"
+  author: "Seungju Kim"
+  date: last-modified
+  chapters:
+    - index.qmd
+    - 1_import.qmd
+    - 2_ego_variables.qmd
+  repo-url: https://github.com/stigmaRverse/stigmaRdata
+  repo-actions: [issue, source]
+
+format:
+  html:
+    number-depth: 1
+    theme:
+      light:
+      - lumen
+      dark:
+      - darkly
+  pdf:
+    documentclass: scrreprt
+
+execute:
+  freeze: auto
+
+bibliography: references.bib

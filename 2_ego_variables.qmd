@@ -1,0 +1,678 @@
+---
+title: "Demographic Variables"
+format:
+  html: 
+    toc: true
+    toc-depth: 6
+    embed-resources: true
+    code-fold: true
+    code-summary: "Click to see code"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+## Preparations
+### Packages
+```{r}
+pacman::p_load(tidyverse, haven, here, psych, openxlsx, conflicted)
+
+# Several packages we (or their dependencies) load define their own versions
+# of common dplyr verbs (e.g., MASS::select()). Rather than fixing this one
+# call at a time, we declare our preference once, globally, for the rest of
+# the session: dplyr's version always wins, regardless of what else gets
+# attached later or in what order.
+conflicts_prefer(dplyr::select)
+conflicts_prefer(dplyr::filter)
+conflicts_prefer(dplyr::rename)
+conflicts_prefer(dplyr::summarize)
+```
+
+## Import Dataset
+```{r}
+p2_data <- readRDS("work_data/p1_data.Rds")
+```
+
+## Creating Demographic Variables
+
+Our survey asked participants to select **all** race/ethnicity, sexual identity, and religious affiliation categories that applied to them (i.e., check-all-that-apply items), while gender identity was a single-select item. This means the raw variables need to be collapsed into single, categorical variables before we can use them in analysis. Below we walk through that process for each of our four key demographic variables: race/ethnicity, gender identity, sexual orientation, and religious identity/affiliation.
+
+### Race and Ethnicity
+
+Race and ethnicity was captured across 11 check-all-that-apply items (`rei_1`-`rei_11`), corresponding to White, Black, Asian, Pacific Islander, Native American, Native Hawaiian, MENA, Latine, Multiracial, Another racial identity, and Prefer not to answer, respectively. We'll collapse these into a single `race` variable across four steps.
+
+#### Step 1: Combine selections into a single string
+
+First we recode missing values on each `rei_*` item to 0 (not selected), then paste together the labels of every category a participant selected into one string (`race_combo`). Respondents who selected nothing are labeled `"None selected"`.
+
+```{r}
+p2_data <- p2_data %>%
+  mutate(
+    across(all_of(paste0("rei_", 1:11)), ~ ifelse(is.na(.x), 0, .x)),
+
+    race_combo = paste0(
+      ifelse(rei_1 == 1, "White_", ""),
+      ifelse(rei_2 == 1, "Black_", ""),
+      ifelse(rei_3 == 1, "Asian_", ""),
+      ifelse(rei_4 == 1, "Pacific Islander_", ""),
+      ifelse(rei_5 == 1, "Native American_", ""),
+      ifelse(rei_6 == 1, "Native Hawaiian_", ""),
+      ifelse(rei_7 == 1, "MENA_", ""),
+      ifelse(rei_8 == 1, "Latine_", ""),
+      ifelse(rei_9 == 1, "Multiracial_", ""),
+      ifelse(rei_10 == 1, "Another racial identity_", ""),
+      ifelse(rei_11 == 1, "Prefer not to answer_", "")
+    ),
+
+    race_combo = case_when(
+      race_combo == "" ~ "None selected",
+      TRUE ~ str_remove(race_combo, "_$")
+    )
+  )
+```
+
+#### Step 2: Check the frequency of raw combinations
+
+Before collapsing further, we look at how many unique combinations of race/ethnicity exist in the data and how common each one is. This tells us which combinations are common enough to deserve their own category, and which are rare enough to fold into a broader group.
+
+```{r}
+combo_counts <- p2_data %>%
+  count(race_combo, sort = TRUE) %>%
+  rename(frequency = n)
+
+combo_counts %>%
+  print(n = Inf)
+```
+
+#### Step 3: Collapse into final race/ethnicity categories
+
+Using the frequencies above, we collapse `race_combo` into a smaller set of meaningful categories (`race2`):
+
+- Single-selection responses of White, Black, Asian, and Latine each become their own "Non-Latine" category (Latine becomes "Latine Non-White"); MENA stays on its own.
+- "White" + "Latine" is common enough on its own to warrant its own category ("White Latine").
+- Every other multi-selection combination, along with single selections of smaller groups (Native American, Pacific Islander, Multiracial, Another racial identity), is combined into "Multiracial/ethnic".
+- "Prefer not to answer" and blank responses are kept as their own categories.
+
+We also set factor levels so tables and plots display in a consistent order.
+
+```{r}
+p2_data <- p2_data %>%
+  mutate(
+    race2 = case_when(
+      # Single-race categories
+      race_combo == "Asian" ~ "Asian Non-Latine",
+      race_combo == "Black" ~ "Black Non-Latine",
+      race_combo == "Latine" ~ "Latine Non-White",
+      race_combo == "White" ~ "White Non-Latine",
+      race_combo == "MENA" ~ "MENA",
+
+      # Special combination
+      race_combo == "White_Latine" ~ "White Latine",
+
+      # All multiple selections go to Multiracial/ethnic
+      race_combo == "White_Asian" ~ "Multiracial/ethnic",
+      race_combo == "White_Black" ~ "Multiracial/ethnic",
+      race_combo == "White_MENA" ~ "Multiracial/ethnic",
+      race_combo == "White_Native American" ~ "Multiracial/ethnic",
+      race_combo == "White_Another racial identity" ~ "Multiracial/ethnic",
+      race_combo == "Black_Asian" ~ "Multiracial/ethnic",
+      race_combo == "Black_Latine" ~ "Multiracial/ethnic",
+      race_combo == "Black_Native American" ~ "Multiracial/ethnic",
+      race_combo == "Black_Another racial identity" ~ "Multiracial/ethnic",
+      race_combo == "Asian_Latine" ~ "Multiracial/ethnic",
+      race_combo == "Asian_Pacific Islander" ~ "Multiracial/ethnic",
+      race_combo == "Asian_Another racial identity" ~ "Multiracial/ethnic",
+      race_combo == "Pacific Islander_Latine" ~ "Multiracial/ethnic",
+      race_combo == "Native American_Latine" ~ "Multiracial/ethnic",
+      race_combo == "White_Native American_Latine" ~ "Multiracial/ethnic",
+
+      # Single minority categories go to Multiracial/ethnic
+      race_combo == "Native American" ~ "Multiracial/ethnic",
+      race_combo == "Pacific Islander" ~ "Multiracial/ethnic",
+      race_combo == "Another racial identity" ~ "Multiracial/ethnic",
+      race_combo == "Multiracial" ~ "Multiracial/ethnic",
+
+      # Complex combinations with Multiracial
+      race_combo == "White_Asian_Multiracial" ~ "Multiracial/ethnic",
+      race_combo == "White_Black_Multiracial" ~ "Multiracial/ethnic",
+      race_combo == "White_Latine_Multiracial" ~ "Multiracial/ethnic",
+      race_combo == "White_Black_Latine_Multiracial" ~ "Multiracial/ethnic",
+      race_combo == "White_Native American_Latine_Multiracial" ~ "Multiracial/ethnic",
+      race_combo == "Black_Latine_Multiracial" ~ "Multiracial/ethnic",
+      race_combo == "Latine_Multiracial" ~ "Multiracial/ethnic",
+      race_combo == "Asian_Multiracial" ~ "Multiracial/ethnic",
+      race_combo == "Multiracial_Another racial identity" ~ "Multiracial/ethnic",
+
+      # Everything selected
+      race_combo == "White_Black_Asian_Pacific Islander_Native American_Native Hawaiian_MENA_Latine_Multiracial_Another racial identity" ~ "Multiracial/ethnic",
+
+      # Special cases
+      race_combo == "Prefer not to answer" ~ "Prefer not to answer",
+      race_combo == "Black_Prefer not to answer" ~ "Prefer not to answer",
+      race_combo == "None selected" ~ "No response",
+
+      # Default: any unmatched combination goes to Multiracial/ethnic
+      TRUE ~ "Multiracial/ethnic"
+    ),
+
+    # Convert to factor with the specified ordering
+    race2 = factor(
+      race2,
+      levels = c(
+        "Asian Non-Latine",
+        "Black Non-Latine",
+        "Latine Non-White",
+        "White Non-Latine",
+        "MENA",
+        "White Latine",
+        "Multiracial/ethnic",
+        "Prefer not to answer",
+        "No response"
+      )
+    )
+  )
+```
+
+#### Step 4: Verify the final variable
+
+Finally, we check the distribution of `race2`, confirm which raw combinations map onto which final category, and make sure no one was left with a missing value.
+
+```{r}
+race2_distribution <- p2_data %>%
+  count(race2, .drop = FALSE) %>%
+  mutate(percentage = round(n / sum(n, na.rm = TRUE) * 100, 2))
+
+race2_distribution
+```
+
+```{r}
+final_mapping <- p2_data %>%
+  count(race_combo, race2, sort = TRUE) %>%
+  rename(frequency = n)
+
+final_mapping %>%
+  print(n = Inf)
+```
+
+```{r}
+sum(is.na(p2_data$race2))
+```
+
+No values are missing, so we save this as our final `race` variable.
+
+```{r}
+p2_data$race <- p2_data$race2
+
+table(p2_data$race)
+```
+
+### Gender Identity
+
+Gender identity (`gi`) was a single-select item, so no combining is needed here. We collapse the original response codes into three broader categories: cisgender men, cisgender women, and transgender/gender-diverse (tgd) individuals, combining response codes 5 through 10 (e.g., trans man, trans woman, nonbinary, genderqueer, etc.) into the `tgd` category due to small cell sizes.
+
+```{r}
+p2_data <- p2_data %>%
+  mutate(gender = case_when(
+    is.na(gi) ~ NA,
+    gi %in% c(1) ~ "cisman",
+    gi %in% c(4) ~ "ciswoman",
+    gi %in% c(5, 6, 7, 8, 9, 10) ~ "tgd",
+    TRUE ~ NA
+  ))
+
+table(p2_data$gender, useNA = "ifany")
+```
+
+### Sexual Orientation
+
+Sexual orientation was another check-all-that-apply item, with 10 identity options (`si_1`-`si_10`): Gay, Lesbian, Bisexual, Pansexual, Heterosexual/straight, Queer, Asexual, Demisexual, Questioning/unsure, and Another sexual identity. Because participants could select multiple identities that overlap in meaningful ways (e.g., someone selecting both "Queer" and "Bisexual" is likely using "Queer" as an umbrella term rather than a distinct identity), we build this variable up over several passes, with each pass collapsing the previous version a bit further.
+
+#### Step 1: Combine selections into a single string
+
+As with race/ethnicity, we first recode missing values to 0, then paste together every selected identity into a single string (`sex_id_combo`), which becomes our raw `sex1` variable. We also count how many identities each person selected (`selection_count`), which we'll use in later steps to decide how to collapse combinations.
+
+```{r}
+p2_data <- p2_data %>%
+  mutate(
+    across(all_of(paste0("si_", 1:10)), ~ ifelse(is.na(.x), 0, .x)),
+
+    sex_id_combo = paste0(
+      ifelse(si_1 == 1, "Gay_", ""),
+      ifelse(si_2 == 1, "Lesbian_", ""),
+      ifelse(si_3 == 1, "Bisexual_", ""),
+      ifelse(si_4 == 1, "Pansexual_", ""),
+      ifelse(si_5 == 1, "Heterosexual/straight_", ""),
+      ifelse(si_6 == 1, "Queer_", ""),
+      ifelse(si_7 == 1, "Asexual_", ""),
+      ifelse(si_8 == 1, "Demisexual_", ""),
+      ifelse(si_9 == 1, "Questioning/unsure_", ""),
+      ifelse(si_10 == 1, "Another sexual identity_", "")
+    ),
+
+    sex_id_combo = case_when(
+      sex_id_combo == "" ~ "None selected",
+      TRUE ~ str_remove(sex_id_combo, "_$")
+    ),
+
+    selection_count = rowSums(
+      cbind(si_1, si_2, si_3, si_4, si_5, si_6, si_7, si_8, si_9, si_10) == 1,
+      na.rm = TRUE
+    ),
+
+    sex1 = sex_id_combo
+  )
+
+sex1_counts <- p2_data %>%
+  count(sex1, sort = TRUE) %>%
+  rename(frequency = n)
+
+sex1_counts %>%
+  print(n = Inf)
+```
+
+#### Step 2: Treat "Queer" and "Heterosexual/straight" as modifiers
+
+Looking at the raw combinations above, two patterns stand out: people frequently pair "Queer" with a more specific identity (e.g., "Queer_Bisexual"), and some pair "Heterosexual/straight" with another identity (e.g., "Heterosexual/straight_Questioning/unsure"). In both cases the more specific identity is likely the better descriptor, so we recode these pairings to that other identity. The one exception is "Queer" + "Asexual", which we keep coded as "Queer".
+
+Note that the two rules are **not symmetric**:
+
+- **Queer** is paired with all 8 other identities (Gay, Lesbian, Bisexual, Pansexual, Asexual, Demisexual, Questioning/unsure, Another sexual identity).
+- **Heterosexual/straight** is only explicitly paired with 5 (Gay, Lesbian, Bisexual, Pansexual, Questioning/unsure). Combinations of Heterosexual/straight with Asexual, Demisexual, Another sexual identity, or Queer are not covered by this recode.
+- For three-way combinations of Queer + Heterosexual/straight + one more identity, only + Bisexual and + Questioning/unsure are explicitly handled; other three-way combinations are not.
+
+Any combination not covered by these rules simply falls through unchanged (kept as the raw `sex_id_combo` string). Single selections and "None selected" also pass through unchanged. This gives us `sex2`.
+
+```{r}
+p2_data <- p2_data %>%
+  mutate(
+    sex2 = case_when(
+      # Handle missing/none selected
+      is.na(sex_id_combo) ~ NA_character_,
+      sex_id_combo == "None selected" ~ "None selected",
+
+      # Single selections - keep as is
+      selection_count == 1 ~ sex_id_combo,
+
+      # Rule 1: If combination includes "Queer" and one other identity, use the other identity
+      selection_count == 2 & grepl("Queer", sex_id_combo) & grepl("Gay", sex_id_combo) ~ "Gay",
+      selection_count == 2 & grepl("Queer", sex_id_combo) & grepl("Lesbian", sex_id_combo) ~ "Lesbian",
+      selection_count == 2 & grepl("Queer", sex_id_combo) & grepl("Bisexual", sex_id_combo) ~ "Bisexual",
+      selection_count == 2 & grepl("Queer", sex_id_combo) & grepl("Pansexual", sex_id_combo) ~ "Pansexual",
+      selection_count == 2 & grepl("Queer", sex_id_combo) & grepl("Asexual", sex_id_combo) ~ "Queer", # Special case: Queer + Asexual = Queer
+      selection_count == 2 & grepl("Queer", sex_id_combo) & grepl("Demisexual", sex_id_combo) ~ "Demisexual",
+      selection_count == 2 & grepl("Queer", sex_id_combo) & grepl("Questioning/unsure", sex_id_combo) ~ "Questioning/unsure",
+      selection_count == 2 & grepl("Queer", sex_id_combo) & grepl("Another sexual identity", sex_id_combo) ~ "Another sexual identity",
+
+      # Rule 2: If combination includes "Heterosexual/straight" and one other identity, use the other identity
+      selection_count == 2 & grepl("Heterosexual/straight", sex_id_combo) & grepl("Gay", sex_id_combo) ~ "Gay",
+      selection_count == 2 & grepl("Heterosexual/straight", sex_id_combo) & grepl("Lesbian", sex_id_combo) ~ "Lesbian",
+      selection_count == 2 & grepl("Heterosexual/straight", sex_id_combo) & grepl("Bisexual", sex_id_combo) ~ "Bisexual",
+      selection_count == 2 & grepl("Heterosexual/straight", sex_id_combo) & grepl("Pansexual", sex_id_combo) ~ "Pansexual",
+      selection_count == 2 & grepl("Heterosexual/straight", sex_id_combo) & grepl("Questioning/unsure", sex_id_combo) ~ "Questioning/unsure",
+
+      # Rule 3: If both Queer AND Heterosexual/straight with one other, use the other identity
+      selection_count == 3 & grepl("Queer", sex_id_combo) & grepl("Heterosexual/straight", sex_id_combo) & grepl("Bisexual", sex_id_combo) ~ "Bisexual",
+      selection_count == 3 & grepl("Queer", sex_id_combo) & grepl("Heterosexual/straight", sex_id_combo) & grepl("Questioning/unsure", sex_id_combo) ~ "Questioning/unsure",
+
+      # All other combinations remain as they are
+      TRUE ~ sex_id_combo
+    )
+  )
+
+sex2_counts <- p2_data %>%
+  count(sex2, sort = TRUE) %>%
+  rename(frequency = n)
+
+sex2_counts %>%
+  print(n = Inf)
+```
+
+#### Step 3: Simplify to single vs. multiple identities
+
+For a simpler descriptive variable, we collapse everything that still contains multiple identities (indicated by an underscore in `sex2`) into a single "Multiple Sexual Identities" category, keeping single identities as they are. This gives us `sex3`.
+
+```{r}
+p2_data <- p2_data %>%
+  mutate(
+    sex3 = case_when(
+      is.na(sex2) ~ NA_character_,
+      sex2 == "None selected" ~ "None selected",
+
+      # Check if it's a single identity (no underscores in the cleaned version)
+      !grepl("_", sex2) ~ sex2,
+
+      # All multiple combinations get labeled as "Multiple Sexual Identities"
+      TRUE ~ "Multiple Sexual Identities"
+    ),
+
+    # Convert to factor with logical ordering
+    sex3 = factor(
+      sex3,
+      levels = c(
+        "Gay", "Lesbian", "Bisexual", "Pansexual", "Heterosexual/straight",
+        "Queer", "Asexual", "Demisexual", "Questioning/unsure",
+        "Another sexual identity", "Multiple Sexual Identities", "None selected"
+      )
+    )
+  )
+
+sex3_counts <- p2_data %>%
+  count(sex3, sort = TRUE) %>%
+  rename(frequency = n)
+
+sex3_counts
+```
+
+#### Step 4: Initial monosexual vs. plurisexual grouping
+
+For our key sexual orientation variable, we group identities into monosexual (attraction to one gender: gay, lesbian, heterosexual/straight) versus plurisexual (attraction to multiple genders: bisexual, pansexual, demisexual), while keeping asexual, queer, questioning/unsure, and "another sexual identity" as their own distinct categories. Combinations that include a plurisexual identity (bisexual, pansexual, or demisexual) anywhere are coded as plurisexual. "Gay" + "Lesbian", and monosexual + asexual combinations, are coded as monosexual. "Queer" + "Asexual" is coded as queer. Anything not covered by these rules is temporarily labeled "Other" so we can review it in the next step. This gives us `sex4`.
+
+```{r}
+p2_data <- p2_data %>%
+  mutate(
+    sex4 = case_when(
+      # Missing values
+      is.na(sex2) ~ NA_character_,
+      sex2 == "None selected" ~ "None selected",
+
+      # Monosexual identities
+      sex2 == "Gay" ~ "Monosexual",
+      sex2 == "Lesbian" ~ "Monosexual",
+      sex2 == "Heterosexual/straight" ~ "Monosexual",
+      sex2 == "Gay_Lesbian" ~ "Monosexual", # Gay+Lesbian combination
+      sex2 == "Lesbian_Gay" ~ "Monosexual", # Gay+Lesbian combination
+
+      # Monosexual + Asexual combinations
+      sex2 == "Gay_Asexual" ~ "Monosexual",
+      sex2 == "Asexual_Gay" ~ "Monosexual",
+      sex2 == "Lesbian_Asexual" ~ "Monosexual",
+      sex2 == "Asexual_Lesbian" ~ "Monosexual",
+
+      # Plurisexual identities
+      sex2 == "Bisexual" ~ "Plurisexual",
+      sex2 == "Pansexual" ~ "Plurisexual",
+      sex2 == "Demisexual" ~ "Plurisexual",
+      grepl("Bisexual", sex2) ~ "Plurisexual", # Any combination with Bisexual
+      grepl("Pansexual", sex2) ~ "Plurisexual", # Any combination with Pansexual
+      grepl("Demisexual", sex2) ~ "Plurisexual", # Any combination with Demisexual
+
+      # Keep specific identities as is
+      sex2 == "Asexual" ~ "Asexual",
+      sex2 == "Queer" ~ "Queer",
+      sex2 == "Questioning/unsure" ~ "Questioning/unsure",
+      sex2 == "Another sexual identity" ~ "Another sexual identity",
+
+      # Special case: Queer + Asexual = Queer
+      sex2 == "Queer_Asexual" ~ "Queer",
+      sex2 == "Asexual_Queer" ~ "Queer",
+
+      # All other cases
+      TRUE ~ "Other"
+    )
+  )
+
+sex4_counts <- p2_data %>%
+  count(sex4, sort = TRUE) %>%
+  rename(frequency = n)
+
+sex4_counts
+```
+
+Before deciding how to handle the leftover cases, let's look at what actually ended up in "Other":
+
+```{r}
+other_in_sex4 <- p2_data %>%
+  filter(sex4 == "Other") %>%
+  count(sex2, sort = TRUE) %>%
+  rename(frequency = n)
+
+other_in_sex4
+```
+
+#### Step 5: Final monosexual vs. plurisexual categorization
+
+Reviewing the "Other" cases above, we found a few more combinations that clearly belong in the "Monosexual" category (e.g., "Gay" or "Lesbian" paired with "Questioning/unsure", or "Gay"/"Lesbian" + "Queer" + "Asexual"). We add those rules here to produce our final variable, `sex5`. Anything still unaccounted for is kept as "Other" (rather than set to missing), since these are genuinely ambiguous combinations worth reviewing manually if needed.
+
+```{r}
+p2_data <- p2_data %>%
+  mutate(
+    sex5 = case_when(
+      # Keep all categories from sex4 except "Other"
+      sex4 != "Other" ~ sex4,
+
+      # Handle specific remaining combinations that should be categorized
+      sex2 == "Gay_Queer_Asexual" ~ "Monosexual",
+      sex2 == "Gay_Questioning/unsure" ~ "Monosexual",
+      sex2 == "Lesbian_Queer_Asexual" ~ "Monosexual",
+      grepl("^Gay_", sex2) & grepl("Questioning", sex2) ~ "Monosexual",
+      grepl("^Lesbian_", sex2) & grepl("Questioning", sex2) ~ "Monosexual",
+
+      # All remaining cases are coded as "Other" rather than NA
+      TRUE ~ "Other"
+    ),
+
+    # Convert to factor with logical ordering
+    sex5 = factor(
+      sex5,
+      levels = c("Monosexual", "Plurisexual", "Asexual", "Queer",
+                 "Questioning/unsure", "Another sexual identity", "Other", "None selected")
+    )
+  )
+
+sex5_counts <- p2_data %>%
+  count(sex5, sort = TRUE) %>%
+  rename(frequency = n)
+
+sex5_counts
+```
+
+As a final check, here's how the original raw combinations (`sex1`) map onto our final categories (`sex5`), showing the 20 most common:
+
+```{r}
+final_sex_mapping <- p2_data %>%
+  count(sex1, sex5, sort = TRUE) %>%
+  rename(frequency = n)
+
+head(final_sex_mapping, 20)
+```
+
+### Religious Identity
+
+Religious affiliation was captured as check-all-that-apply items at two time points: current affiliation (`rsi_curr_1`-`rsi_curr_26`) and past affiliation (`rsi_past_1`-`rsi_past_26`). From these, we build a religious-trajectory variable, `relid_life`, classifying each respondent as `Never`, `Former`, or `Current` religious. This section mirrors the coding scheme used in a related analysis, *Patterns of Religious Engagement*, which uses this exact same raw dataset (`sgm_ego_spss_DID_07_24_25.sav`). Ambiguous or unclassifiable cases from that analysis were manually reviewed by two coders, and we reuse those resolved codes here rather than re-doing the review from scratch — because the row-based ID scheme lines up across both projects (both assign `internal_id`/`ID` as `1:nrow()` on the full, unfiltered sample immediately after import), the manual codes can be joined back in directly.
+
+::: callout-note
+**How is religious trajectory (`relid_life`) coded?**
+
+1.  **Classify affiliation per wave**: Each respondent's checked religious-affiliation items are collapsed to a single primary category for the past and current waves (`rel_id2`/`rel_id1`), using priority-ordered rules: non-religious/secular items first (Agnostic, Atheist, Non-religious, None, Secular Humanist), then Spiritual, then each denomination/tradition.
+2.  **Group into broad categories**: `rel_id1`/`rel_id2` are grouped into `rel_id` (current) and `rel_past_id` (past). Only Buddhism, Daoism, Hinduism, Islam, Judaism, Paganism, Sikhism, and Unitarian are grouped into `Other`; only Protestant, Orthodox, LDS, and Other Christian are grouped into `Christian`. Roman Catholic, Not Religious, and Spiritual keep their own labels. **Bahai, Confucianism, Jainism, Native American, and Zoroastrianism are *not* grouped** — they pass through as their own raw labels, since the original scheme has no catch-all rule for them.
+3.  **Classify trajectory**: Comparing past vs. current group yields `relid_life`:
+    -   `Never`: not religious/spiritual in both waves
+    -   `Former`: religious (Christian/Roman Catholic/Other) in the past, not religious/spiritual now
+    -   `Current`: religious (Christian/Roman Catholic/Other) in both waves
+    -   Everything else is `NA` — this includes people who switched between traditions, people who *became* religious (not religious/spiritual in the past but religious now), and anyone whose past or current category is one of the five ungrouped raw labels above.
+4.  **Manual review of ambiguous/NA cases**: All `NA` respondents were independently reviewed by two coders across all religion responses (`screen/RelID_Coding_062426.xlsx`). Cases where both coders agreed on `Current`, `Former`, or `Never` were resolved; contradictions, missing data, or unresolved disagreements stayed `NA`. Resolved codes are merged back in by respondent ID and override the automatic classification only where a resolved code exists — everyone else keeps their automatic (possibly still-`NA`) classification.
+:::
+
+#### Current Affiliation
+
+We first collapse the 26 current-affiliation checkboxes into a single label per person (`rel_id1`). Non-religious/secular selections take priority — if a respondent checked *any* of Agnostic, Atheist, Non-religious, None, or Secular Humanist, they're coded `"Not Religious"` regardless of what else they checked. We also keep the specific secular label on its own (`not_rel`) for reference. After Spiritual and the non-religious block, each remaining tradition is checked in turn.
+
+We then group `rel_id1` into a broader `rel_id` variable. As noted above, only 8 smaller/less-represented traditions get folded into `"Other"`, and only 4 Christian sub-traditions get folded into `"Christian"` — Bahai, Confucianism, Jainism, Native American, and Zoroastrianism are left as their own raw labels rather than grouped anywhere.
+
+```{r warning = FALSE}
+p2_data <- p2_data %>%
+  mutate(
+    not_rel = case_when(
+      rsi_curr_1 == 1 ~ "Agnostic",
+      rsi_curr_4 == 1 ~ "Atheist",
+      rsi_curr_19 == 1 ~ "Non-religious",
+      rsi_curr_20 == 1 ~ "None",
+      rsi_curr_22 == 1 ~ "Secular Humanist"
+    ),
+    rel_id1 = case_when(
+      rsi_curr_1 == 1 | rsi_curr_4 == 1 | rsi_curr_19 == 1 | rsi_curr_20 == 1 | rsi_curr_22 == 1 ~ "Not Religious",
+      rsi_curr_24 == 1 ~ "Spiritual",
+      rsi_curr_7  == 1 ~ "LDS",
+      rsi_curr_8  == 1 ~ "Protestant",
+      rsi_curr_9  == 1 ~ "Orthodox",
+      rsi_curr_10 == 1 ~ "Roman Catholic",
+      rsi_curr_11 == 1 ~ "Other Christian",
+      rsi_curr_5  == 1 ~ "Bahai",
+      rsi_curr_6  == 1 ~ "Buddhism",
+      rsi_curr_12 == 1 ~ "Confucianism",
+      rsi_curr_13 == 1 ~ "Daoism",
+      rsi_curr_14 == 1 ~ "Hinduism",
+      rsi_curr_15 == 1 ~ "Islam",
+      rsi_curr_16 == 1 ~ "Jainism",
+      rsi_curr_17 == 1 ~ "Judaism",
+      rsi_curr_18 == 1 ~ "Native American",
+      rsi_curr_21 == 1 ~ "Paganism",
+      rsi_curr_23 == 1 ~ "Sikhism",
+      rsi_curr_25 == 1 ~ "Unitarian",
+      rsi_curr_26 == 1 ~ "Zoroastrianism"
+    )
+  ) %>%
+  mutate(
+    rel_id = case_when(
+      rel_id1 %in% c("Buddhism", "Daoism", "Hinduism", "Islam", "Judaism", "Paganism", "Sikhism", "Unitarian") ~ "Other",
+      rel_id1 %in% c("Other Christian", "Protestant", "Orthodox", "LDS") ~ "Christian",
+      TRUE ~ rel_id1
+    )
+  )
+
+table(p2_data$rel_id)
+```
+
+#### Past Affiliation
+
+We repeat the exact same two-step process on the past-affiliation checkboxes (`rsi_past_*`), producing the raw per-tradition label `rel_id2` and the grouped variable `rel_past_id`. The same grouping rule applies: only the same 8 traditions fold into `"Other"` and the same 4 Christian sub-traditions fold into `"Christian"`; Bahai, Confucianism, Jainism, Native American, and Zoroastrianism again pass through ungrouped.
+
+```{r warning = FALSE}
+p2_data <- p2_data %>%
+  mutate(
+    rel_id2 = case_when(
+      rsi_past_1 == 1 | rsi_past_4 == 1 | rsi_past_19 == 1 | rsi_past_20 == 1 | rsi_past_22 == 1 ~ "Not Religious",
+      rsi_past_24 == 1 ~ "Spiritual",
+      rsi_past_7  == 1 ~ "LDS",
+      rsi_past_8  == 1 ~ "Protestant",
+      rsi_past_9  == 1 ~ "Orthodox",
+      rsi_past_10 == 1 ~ "Roman Catholic",
+      rsi_past_11 == 1 ~ "Other Christian",
+      rsi_past_5  == 1 ~ "Bahai",
+      rsi_past_6  == 1 ~ "Buddhism",
+      rsi_past_12 == 1 ~ "Confucianism",
+      rsi_past_13 == 1 ~ "Daoism",
+      rsi_past_14 == 1 ~ "Hinduism",
+      rsi_past_15 == 1 ~ "Islam",
+      rsi_past_16 == 1 ~ "Jainism",
+      rsi_past_17 == 1 ~ "Judaism",
+      rsi_past_18 == 1 ~ "Native American",
+      rsi_past_21 == 1 ~ "Paganism",
+      rsi_past_23 == 1 ~ "Sikhism",
+      rsi_past_25 == 1 ~ "Unitarian",
+      rsi_past_26 == 1 ~ "Zoroastrianism"
+    )
+  ) %>%
+  mutate(
+    rel_past_id = case_when(
+      rel_id2 %in% c("Buddhism", "Daoism", "Hinduism", "Islam", "Judaism", "Paganism", "Sikhism", "Unitarian") ~ "Other",
+      rel_id2 %in% c("Other Christian", "Protestant", "Orthodox", "LDS") ~ "Christian",
+      TRUE ~ rel_id2
+    )
+  )
+
+table(p2_data$rel_past_id)
+```
+
+#### Religious Trajectory (`relid_life`)
+
+We compare `rel_past_id` to `rel_id` to classify each respondent's trajectory. Only three combinations are explicitly handled — `Never` (not religious/spiritual at both waves), `Former` (religious at some point among Christian/Roman Catholic/Other, not religious/spiritual now), and `Current` (religious among Christian/Roman Catholic/Other at both waves). Everything else — including newly-religious respondents (not religious/spiritual in the past but religious now), anyone who switched between the grouped categories, and anyone whose past or current affiliation is one of the five ungrouped raw labels (Bahai, Confucianism, Jainism, Native American, Zoroastrianism) — falls to `NA`, to be resolved by the manual coding step below.
+
+```{r warning = FALSE}
+p2_data <- p2_data %>%
+  mutate(
+    relid_life = case_when(
+      # Never: not religious (or spiritual) in both waves
+      rel_past_id %in% c("Not Religious", "Spiritual") &
+        rel_id %in% c("Not Religious", "Spiritual") ~ "Never",
+
+      # Former: religious in the past, not religious (or spiritual) now
+      rel_past_id %in% c("Christian", "Roman Catholic", "Other") &
+        rel_id %in% c("Not Religious", "Spiritual") ~ "Former",
+
+      # Current: religious in the past AND still religious now
+      rel_past_id %in% c("Christian", "Roman Catholic", "Other") &
+        rel_id %in% c("Christian", "Roman Catholic", "Other") ~ "Current",
+
+      # Everything else (e.g., switched traditions, became religious, or
+      # involves an ungrouped raw label) → NA, resolved manually below
+      TRUE ~ NA
+    )
+  )
+
+table(p2_data$relid_life, useNA = "always")
+
+# Capture which respondents are NA under the automatic classification, before
+# the manual codes get merged in below. We use this later purely to verify
+# the merge did what we expect — it plays no role in the classification itself.
+na_ids_auto <- p2_data$internal_id[is.na(p2_data$relid_life)]
+```
+
+#### Apply Manual Coding
+
+Every respondent left `NA` above was independently reviewed by two coders (SK, NT) against their full set of religion responses, as part of the *Patterns of Religious Engagement* analysis. That review's resolved codes live in the `Final` column of `screen/RelID_Coding_062426.xlsx` (copied into this project's `screen/` folder), keyed by respondent ID. Rows with a resolved `Final` value (`Current`, `Former`, or `Never`) override the automatic classification above; rows where the coders disagreed, lacked data, or otherwise couldn't resolve the case are `NA` in `Final` and are **left untouched** — they keep whatever `relid_life` value they already had (which, since they all started out `NA`, means they simply remain `NA`).
+
+The join key is `internal_id`, the sequential row number assigned to the full, unfiltered sample in `1_import.qmd`. Because this section runs before any row filtering (the "Addressing Errors" step below hasn't happened yet), and because `internal_id` was assigned immediately after import (mirroring how the ID was assigned in the *Patterns of Religious Engagement* project), the two ID schemes line up and the join is safe.
+
+```{r}
+rel_id_code <- openxlsx::read.xlsx(here("screen", "RelID_Coding_062426.xlsx"))
+
+manual_codes <- rel_id_code %>%
+  filter(!is.na(Final)) %>%
+  select(internal_id, Final)
+
+p2_data <- p2_data %>%
+  left_join(manual_codes, by = c("internal_id" = "internal_id")) %>%
+  mutate(relid_life = coalesce(Final, relid_life)) %>%
+  select(-Final)
+
+table(p2_data$relid_life, useNA = "always")
+```
+
+## Addressing Errors
+### Age
+```{r}
+psych::describe(p2_data$ageyear)
+```
+
+Here we can see that we only have valid responses for 889 individuals. But something else doesn't add up. The responses start at 1, which is impossible. 
+
+```{r}
+haven::print_labels(p2_data$ageyear)
+```
+
+As we can see here, the value starts at 1, but the label starts at 18. Thus, we can just add `17` to all the values to correspond to the correct label. 
+
+```{r}
+p2_data$ageyear <- p2_data$ageyear + 17
+table(p2_data$ageyear)
+hist(p2_data$ageyear)
+```
+
+Now you can see we have the correct range of ages. We can also notice that someone was 47 years old, and should not have qualified for our study. We will remove them. 
+
+```{r}
+key_columns <- c("responseid", "ageyear")
+
+p2_data <- p2_data %>%
+  filter(ageyear <= 30 | is.na(ageyear))
+
+table(p2_data$ageyear)
+hist(p2_data$ageyear)
+```
+
+## Save Results
+```{r}
+saveRDS(p2_data, "work_data/p2_data.Rds")
+```
+

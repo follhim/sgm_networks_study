@@ -1,0 +1,12 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+/.quarto/
+
+work_data/*
+.sav*
+.Rds*
+
+.environ*
