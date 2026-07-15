@@ -1,0 +1,33 @@
+---
+title: "Ego-Alter Variables"
+format:
+  html: 
+    toc: true
+    toc-depth: 3
+    embed-resources: true
+    code-fold: true
+    code-summary: "Click to see code"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+:::callout-note
+**Overall Summary**: This phase of data cleaning will create all desired ego-alter variables. 
+:::
+
+## Preparations
+### Packages
+```{r}
+pacman::p_load(tidyverse, haven, here)
+```
+
+## Import Dataset
+```{r}
+p4_data <- readRDS("work_data/p3_data.Rds")
+```
+
+## Save Results
+```{r}
+saveRDS(p4_data, "work_data/p4_data.Rds")
+```

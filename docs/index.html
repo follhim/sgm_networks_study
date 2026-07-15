@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Seungju Kim">
-<meta name="dcterms.date" content="2026-07-02">
+<meta name="dcterms.date" content="2026-07-15">
 
 <title>SGM Network Study Dataset</title>
 <style>
@@ -292,8 +292,20 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./2_ego_variables.html" class="sidebar-item-text sidebar-link">
+  <a href="./2_ego_var.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Demographic Variables</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./3_alter_var.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Alter Variables</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./4_ego_alter_var.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Ego-Alter Variables</span></span></a>
   </div>
 </li>
     </ul>
@@ -308,6 +320,7 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a>
   <ul class="collapse">
+  <li><a href="#how-does-it-work" id="toc-how-does-it-work" class="nav-link" data-scroll-target="#how-does-it-work">How does it work?</a></li>
   <li><a href="#spot-any-errors" id="toc-spot-any-errors" class="nav-link" data-scroll-target="#spot-any-errors">Spot any errors?</a></li>
   </ul></li>
   </ul>
@@ -336,7 +349,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 2, 2026</p>
+      <p class="date">July 15, 2026</p>
     </div>
   </div>
   
@@ -367,9 +380,24 @@ Important
 <p>All code and data are processed locally. At no time is data stored on GitHub, even temporarily using memory.</p>
 </div>
 </div>
+<section id="how-does-it-work" class="level2">
+<h2 class="anchored" data-anchor-id="how-does-it-work">How does it work?</h2>
+<ol type="1">
+<li>This data cleaning workflow is performed locally on a laptop.</li>
+<li>Each phase is separated by its own R script file (<code>.qmd</code> file)</li>
+<li>Thus, each R script <em>chapter</em> reflects the actual underlying code used to clean and process data.</li>
+</ol>
+<blockquote class="blockquote">
+<p>This means that you can also directly suggest edits or corrections <strong>online</strong> (see section below).</p>
+</blockquote>
+<ol start="4" type="1">
+<li>Everytime the R code is changed or updated, GitHub will track and contain a comment (user must provide) that denotes what changes were made.</li>
+</ol>
+</section>
 <section id="spot-any-errors" class="level2">
 <h2 class="anchored" data-anchor-id="spot-any-errors">Spot any errors?</h2>
-<p>Open an issue in the corresponding chapter you are in. You can find the GitHub button on the top right. From there, you can detail what the problem is, and someone will work to resolve the issue.</p>
+<p>Open an issue in the corresponding chapter you are in. You can find the “<em>Report an issue</em>” GitHub button on the <strong>top right</strong> of every page. From there, you can detail what the problem is, and someone will work to resolve the issue.</p>
+<p>Tracking and resolving through <strong>issues</strong> in GitHub is highly recommended as they are tracked and naturally logged into the history of changes/updates to the larger data cleaning workflow. This is crucial for returning to previous issues.</p>
 
 
 </section>

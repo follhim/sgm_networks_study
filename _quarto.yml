@@ -9,13 +9,15 @@ book:
   chapters:
     - index.qmd
     - 1_import.qmd
-    - 2_ego_variables.qmd
+    - 2_ego_var.qmd
+    - 3_alter_var.qmd
+    - 4_ego_alter_var.qmd
   repo-url: https://github.com/follhim/sgm_networks_study
   repo-actions: [issue, source]
 
 format:
   html:
-    number-depth: 1
+    number-depth: 2
     theme:
       light:
       - lumen

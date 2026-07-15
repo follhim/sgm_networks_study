@@ -3,7 +3,7 @@ title: "Demographic Variables"
 format:
   html: 
     toc: true
-    toc-depth: 6
+    toc-depth: 3
     embed-resources: true
     code-fold: true
     code-summary: "Click to see code"
@@ -11,6 +11,13 @@ output: html_document
 editor_options: 
   chunk_output_type: console
 ---
+
+:::callout-note
+**Overall Summary**: This phase of data cleaning will
+
+-  create all ego-demographic variables
+-  drop >29 year old participants from data.
+:::
 
 ## Preparations
 ### Packages
@@ -37,11 +44,11 @@ p2_data <- readRDS("work_data/p1_data.Rds")
 
 Our survey asked participants to select **all** race/ethnicity, sexual identity, and religious affiliation categories that applied to them (i.e., check-all-that-apply items), while gender identity was a single-select item. This means the raw variables need to be collapsed into single, categorical variables before we can use them in analysis. Below we walk through that process for each of our four key demographic variables: race/ethnicity, gender identity, sexual orientation, and religious identity/affiliation.
 
-### Race and Ethnicity
+## Race and Ethnicity
 
 Race and ethnicity was captured across 11 check-all-that-apply items (`rei_1`-`rei_11`), corresponding to White, Black, Asian, Pacific Islander, Native American, Native Hawaiian, MENA, Latine, Multiracial, Another racial identity, and Prefer not to answer, respectively. We'll collapse these into a single `race` variable across four steps.
 
-#### Step 1: Combine selections into a single string
+### Step 1: Combine selections into a single string
 
 First we recode missing values on each `rei_*` item to 0 (not selected), then paste together the labels of every category a participant selected into one string (`race_combo`). Respondents who selected nothing are labeled `"None selected"`.
 
@@ -71,7 +78,7 @@ p2_data <- p2_data %>%
   )
 ```
 
-#### Step 2: Check the frequency of raw combinations
+### Step 2: Check the frequency of raw combinations
 
 Before collapsing further, we look at how many unique combinations of race/ethnicity exist in the data and how common each one is. This tells us which combinations are common enough to deserve their own category, and which are rare enough to fold into a broader group.
 
@@ -84,7 +91,7 @@ combo_counts %>%
   print(n = Inf)
 ```
 
-#### Step 3: Collapse into final race/ethnicity categories
+### Step 3: Collapse into final race/ethnicity categories
 
 Using the frequencies above, we collapse `race_combo` into a smaller set of meaningful categories (`race2`):
 
@@ -173,7 +180,7 @@ p2_data <- p2_data %>%
   )
 ```
 
-#### Step 4: Verify the final variable
+### Step 4: Verify the final variable
 
 Finally, we check the distribution of `race2`, confirm which raw combinations map onto which final category, and make sure no one was left with a missing value.
 
@@ -206,7 +213,7 @@ p2_data$race <- p2_data$race2
 table(p2_data$race)
 ```
 
-### Gender Identity
+## Gender Identity
 
 Gender identity (`gi`) was a single-select item, so no combining is needed here. We collapse the original response codes into three broader categories: cisgender men, cisgender women, and transgender/gender-diverse (tgd) individuals, combining response codes 5 through 10 (e.g., trans man, trans woman, nonbinary, genderqueer, etc.) into the `tgd` category due to small cell sizes.
 
@@ -223,11 +230,11 @@ p2_data <- p2_data %>%
 table(p2_data$gender, useNA = "ifany")
 ```
 
-### Sexual Orientation
+## Sexual Orientation
 
 Sexual orientation was another check-all-that-apply item, with 10 identity options (`si_1`-`si_10`): Gay, Lesbian, Bisexual, Pansexual, Heterosexual/straight, Queer, Asexual, Demisexual, Questioning/unsure, and Another sexual identity. Because participants could select multiple identities that overlap in meaningful ways (e.g., someone selecting both "Queer" and "Bisexual" is likely using "Queer" as an umbrella term rather than a distinct identity), we build this variable up over several passes, with each pass collapsing the previous version a bit further.
 
-#### Step 1: Combine selections into a single string
+### Step 1: Combine selections into a single string
 
 As with race/ethnicity, we first recode missing values to 0, then paste together every selected identity into a single string (`sex_id_combo`), which becomes our raw `sex1` variable. We also count how many identities each person selected (`selection_count`), which we'll use in later steps to decide how to collapse combinations.
 
@@ -270,7 +277,7 @@ sex1_counts %>%
   print(n = Inf)
 ```
 
-#### Step 2: Treat "Queer" and "Heterosexual/straight" as modifiers
+### Step 2: Treat "Queer" and "Heterosexual/straight" as modifiers
 
 Looking at the raw combinations above, two patterns stand out: people frequently pair "Queer" with a more specific identity (e.g., "Queer_Bisexual"), and some pair "Heterosexual/straight" with another identity (e.g., "Heterosexual/straight_Questioning/unsure"). In both cases the more specific identity is likely the better descriptor, so we recode these pairings to that other identity. The one exception is "Queer" + "Asexual", which we keep coded as "Queer".
 
@@ -327,7 +334,7 @@ sex2_counts %>%
   print(n = Inf)
 ```
 
-#### Step 3: Simplify to single vs. multiple identities
+### Step 3: Simplify to single vs. multiple identities
 
 For a simpler descriptive variable, we collapse everything that still contains multiple identities (indicated by an underscore in `sex2`) into a single "Multiple Sexual Identities" category, keeping single identities as they are. This gives us `sex3`.
 
@@ -363,7 +370,7 @@ sex3_counts <- p2_data %>%
 sex3_counts
 ```
 
-#### Step 4: Initial monosexual vs. plurisexual grouping
+### Step 4: Initial monosexual vs. plurisexual grouping
 
 For our key sexual orientation variable, we group identities into monosexual (attraction to one gender: gay, lesbian, heterosexual/straight) versus plurisexual (attraction to multiple genders: bisexual, pansexual, demisexual), while keeping asexual, queer, questioning/unsure, and "another sexual identity" as their own distinct categories. Combinations that include a plurisexual identity (bisexual, pansexual, or demisexual) anywhere are coded as plurisexual. "Gay" + "Lesbian", and monosexual + asexual combinations, are coded as monosexual. "Queer" + "Asexual" is coded as queer. Anything not covered by these rules is temporarily labeled "Other" so we can review it in the next step. This gives us `sex4`.
 
@@ -429,7 +436,7 @@ other_in_sex4 <- p2_data %>%
 other_in_sex4
 ```
 
-#### Step 5: Final monosexual vs. plurisexual categorization
+### Step 5: Final monosexual vs. plurisexual categorization
 
 Reviewing the "Other" cases above, we found a few more combinations that clearly belong in the "Monosexual" category (e.g., "Gay" or "Lesbian" paired with "Questioning/unsure", or "Gay"/"Lesbian" + "Queer" + "Asexual"). We add those rules here to produce our final variable, `sex5`. Anything still unaccounted for is kept as "Other" (rather than set to missing), since these are genuinely ambiguous combinations worth reviewing manually if needed.
 
@@ -476,7 +483,7 @@ final_sex_mapping <- p2_data %>%
 head(final_sex_mapping, 20)
 ```
 
-### Religious Identity
+## Religious Identity
 
 Religious affiliation was captured as check-all-that-apply items at two time points: current affiliation (`rsi_curr_1`-`rsi_curr_26`) and past affiliation (`rsi_past_1`-`rsi_past_26`). From these, we build a religious-trajectory variable, `relid_life`, classifying each respondent as `Never`, `Former`, or `Current` religious. This section mirrors the coding scheme used in a related analysis, *Patterns of Religious Engagement*, which uses this exact same raw dataset (`sgm_ego_spss_DID_07_24_25.sav`). Ambiguous or unclassifiable cases from that analysis were manually reviewed by two coders, and we reuse those resolved codes here rather than re-doing the review from scratch — because the row-based ID scheme lines up across both projects (both assign `internal_id`/`ID` as `1:nrow()` on the full, unfiltered sample immediately after import), the manual codes can be joined back in directly.
 
@@ -493,7 +500,7 @@ Religious affiliation was captured as check-all-that-apply items at two time poi
 4.  **Manual review of ambiguous/NA cases**: All `NA` respondents were independently reviewed by two coders across all religion responses (`screen/RelID_Coding_062426.xlsx`). Cases where both coders agreed on `Current`, `Former`, or `Never` were resolved; contradictions, missing data, or unresolved disagreements stayed `NA`. Resolved codes are merged back in by respondent ID and override the automatic classification only where a resolved code exists — everyone else keeps their automatic (possibly still-`NA`) classification.
 :::
 
-#### Current Affiliation
+### Current Affiliation
 
 We first collapse the 26 current-affiliation checkboxes into a single label per person (`rel_id1`). Non-religious/secular selections take priority — if a respondent checked *any* of Agnostic, Atheist, Non-religious, None, or Secular Humanist, they're coded `"Not Religious"` regardless of what else they checked. We also keep the specific secular label on its own (`not_rel`) for reference. After Spiritual and the non-religious block, each remaining tradition is checked in turn.
 
@@ -543,7 +550,7 @@ p2_data <- p2_data %>%
 table(p2_data$rel_id)
 ```
 
-#### Past Affiliation
+### Past Affiliation
 
 We repeat the exact same two-step process on the past-affiliation checkboxes (`rsi_past_*`), producing the raw per-tradition label `rel_id2` and the grouped variable `rel_past_id`. The same grouping rule applies: only the same 8 traditions fold into `"Other"` and the same 4 Christian sub-traditions fold into `"Christian"`; Bahai, Confucianism, Jainism, Native American, and Zoroastrianism again pass through ungrouped.
 
@@ -584,7 +591,7 @@ p2_data <- p2_data %>%
 table(p2_data$rel_past_id)
 ```
 
-#### Religious Trajectory (`relid_life`)
+### Religious Trajectory (`relid_life`)
 
 We compare `rel_past_id` to `rel_id` to classify each respondent's trajectory. Only three combinations are explicitly handled — `Never` (not religious/spiritual at both waves), `Former` (religious at some point among Christian/Roman Catholic/Other, not religious/spiritual now), and `Current` (religious among Christian/Roman Catholic/Other at both waves). Everything else — including newly-religious respondents (not religious/spiritual in the past but religious now), anyone who switched between the grouped categories, and anyone whose past or current affiliation is one of the five ungrouped raw labels (Bahai, Confucianism, Jainism, Native American, Zoroastrianism) — falls to `NA`, to be resolved by the manual coding step below.
 
@@ -618,7 +625,7 @@ table(p2_data$relid_life, useNA = "always")
 na_ids_auto <- p2_data$internal_id[is.na(p2_data$relid_life)]
 ```
 
-#### Apply Manual Coding
+### Apply Manual Coding
 
 Every respondent left `NA` above was independently reviewed by two coders (SK, NT) against their full set of religion responses, as part of the *Patterns of Religious Engagement* analysis. That review's resolved codes live in the `Final` column of `screen/RelID_Coding_062426.xlsx` (copied into this project's `screen/` folder), keyed by respondent ID. Rows with a resolved `Final` value (`Current`, `Former`, or `Never`) override the automatic classification above; rows where the coders disagreed, lacked data, or otherwise couldn't resolve the case are `NA` in `Final` and are **left untouched** — they keep whatever `relid_life` value they already had (which, since they all started out `NA`, means they simply remain `NA`).
 

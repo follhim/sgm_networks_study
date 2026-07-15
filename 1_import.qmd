@@ -64,4 +64,3 @@ We create our own ID variable, but in this case we just made it correspond to th
 ```{r}
 saveRDS(p1_data, "work_data/p1_data.Rds")
 ```
-
