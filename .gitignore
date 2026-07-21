@@ -8,5 +8,6 @@
 work_data/*
 .sav*
 .Rds*
+.xlsx*
 
 .renviron*

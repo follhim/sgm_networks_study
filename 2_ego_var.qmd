@@ -490,8 +490,8 @@ Religious affiliation was captured as check-all-that-apply items at two time poi
 ::: callout-note
 **How is religious trajectory (`relid_life`) coded?**
 
-1.  **Classify affiliation per wave**: Each respondent's checked religious-affiliation items are collapsed to a single primary category for the past and current waves (`rel_id2`/`rel_id1`), using priority-ordered rules: non-religious/secular items first (Agnostic, Atheist, Non-religious, None, Secular Humanist), then Spiritual, then each denomination/tradition.
-2.  **Group into broad categories**: `rel_id1`/`rel_id2` are grouped into `rel_id` (current) and `rel_past_id` (past). Only Buddhism, Daoism, Hinduism, Islam, Judaism, Paganism, Sikhism, and Unitarian are grouped into `Other`; only Protestant, Orthodox, LDS, and Other Christian are grouped into `Christian`. Roman Catholic, Not Religious, and Spiritual keep their own labels. **Bahai, Confucianism, Jainism, Native American, and Zoroastrianism are *not* grouped** — they pass through as their own raw labels, since the original scheme has no catch-all rule for them.
+1.  **Classify affiliation per wave**: Each respondent's checked religious-affiliation items are collapsed to a single primary category for the past and current waves (`rel_past_id2`/`rel_curr_id1`), using priority-ordered rules: non-religious/secular items first (Agnostic, Atheist, Non-religious, None, Secular Humanist), then Spiritual, then each denomination/tradition.
+2.  **Group into broad categories**: `rel_curr_id1`/`rel_past_id2` are grouped into `rel_curr_id` (current) and `rel_past_id` (past). Only Buddhism, Daoism, Hinduism, Islam, Judaism, Paganism, Sikhism, and Unitarian are grouped into `Other`; only Protestant, Orthodox, LDS, and Other Christian are grouped into `Christian`. Roman Catholic, Not Religious, and Spiritual keep their own labels. **Bahai, Confucianism, Jainism, Native American, and Zoroastrianism are *not* grouped** — they pass through as their own raw labels, since the original scheme has no catch-all rule for them.
 3.  **Classify trajectory**: Comparing past vs. current group yields `relid_life`:
     -   `Never`: not religious/spiritual in both waves
     -   `Former`: religious (Christian/Roman Catholic/Other) in the past, not religious/spiritual now
@@ -502,9 +502,9 @@ Religious affiliation was captured as check-all-that-apply items at two time poi
 
 ### Current Affiliation
 
-We first collapse the 26 current-affiliation checkboxes into a single label per person (`rel_id1`). Non-religious/secular selections take priority — if a respondent checked *any* of Agnostic, Atheist, Non-religious, None, or Secular Humanist, they're coded `"Not Religious"` regardless of what else they checked. We also keep the specific secular label on its own (`not_rel`) for reference. After Spiritual and the non-religious block, each remaining tradition is checked in turn.
+We first collapse the 26 current-affiliation checkboxes into a single label per person (`rel_curr_id1`). Non-religious/secular selections take priority — if a respondent checked *any* of Agnostic, Atheist, Non-religious, None, or Secular Humanist, they're coded `"Not Religious"` regardless of what else they checked. We also keep the specific secular label on its own (`not_rel`) for reference. After Spiritual and the non-religious block, each remaining tradition is checked in turn.
 
-We then group `rel_id1` into a broader `rel_id` variable. As noted above, only 8 smaller/less-represented traditions get folded into `"Other"`, and only 4 Christian sub-traditions get folded into `"Christian"` — Bahai, Confucianism, Jainism, Native American, and Zoroastrianism are left as their own raw labels rather than grouped anywhere.
+We then group `rel_curr_id1` into a broader `rel_curr_id` variable. As noted above, only 8 smaller/less-represented traditions get folded into `"Other"`, and only 4 Christian sub-traditions get folded into `"Christian"` — Bahai, Confucianism, Jainism, Native American, and Zoroastrianism are left as their own raw labels rather than grouped anywhere.
 
 ```{r warning = FALSE}
 p2_data <- p2_data %>%
@@ -516,7 +516,7 @@ p2_data <- p2_data %>%
       rsi_curr_20 == 1 ~ "None",
       rsi_curr_22 == 1 ~ "Secular Humanist"
     ),
-    rel_id1 = case_when(
+    rel_curr_id1 = case_when(
       rsi_curr_1 == 1 | rsi_curr_4 == 1 | rsi_curr_19 == 1 | rsi_curr_20 == 1 | rsi_curr_22 == 1 ~ "Not Religious",
       rsi_curr_24 == 1 ~ "Spiritual",
       rsi_curr_7  == 1 ~ "LDS",
@@ -540,24 +540,24 @@ p2_data <- p2_data %>%
     )
   ) %>%
   mutate(
-    rel_id = case_when(
-      rel_id1 %in% c("Buddhism", "Daoism", "Hinduism", "Islam", "Judaism", "Paganism", "Sikhism", "Unitarian") ~ "Other",
-      rel_id1 %in% c("Other Christian", "Protestant", "Orthodox", "LDS") ~ "Christian",
-      TRUE ~ rel_id1
+    rel_curr_id = case_when(
+      rel_curr_id1 %in% c("Buddhism", "Daoism", "Hinduism", "Islam", "Judaism", "Paganism", "Sikhism", "Unitarian") ~ "Other",
+      rel_curr_id1 %in% c("Other Christian", "Protestant", "Orthodox", "LDS") ~ "Christian",
+      TRUE ~ rel_curr_id1
     )
   )
 
-table(p2_data$rel_id)
+table(p2_data$rel_curr_id)
 ```
 
 ### Past Affiliation
 
-We repeat the exact same two-step process on the past-affiliation checkboxes (`rsi_past_*`), producing the raw per-tradition label `rel_id2` and the grouped variable `rel_past_id`. The same grouping rule applies: only the same 8 traditions fold into `"Other"` and the same 4 Christian sub-traditions fold into `"Christian"`; Bahai, Confucianism, Jainism, Native American, and Zoroastrianism again pass through ungrouped.
+We repeat the exact same two-step process on the past-affiliation checkboxes (`rsi_past_*`), producing the raw per-tradition label `rel_past_id2` and the grouped variable `rel_past_id`. The same grouping rule applies: only the same 8 traditions fold into `"Other"` and the same 4 Christian sub-traditions fold into `"Christian"`; Bahai, Confucianism, Jainism, Native American, and Zoroastrianism again pass through ungrouped.
 
 ```{r warning = FALSE}
 p2_data <- p2_data %>%
   mutate(
-    rel_id2 = case_when(
+    rel_past_id2 = case_when(
       rsi_past_1 == 1 | rsi_past_4 == 1 | rsi_past_19 == 1 | rsi_past_20 == 1 | rsi_past_22 == 1 ~ "Not Religious",
       rsi_past_24 == 1 ~ "Spiritual",
       rsi_past_7  == 1 ~ "LDS",
@@ -582,9 +582,9 @@ p2_data <- p2_data %>%
   ) %>%
   mutate(
     rel_past_id = case_when(
-      rel_id2 %in% c("Buddhism", "Daoism", "Hinduism", "Islam", "Judaism", "Paganism", "Sikhism", "Unitarian") ~ "Other",
-      rel_id2 %in% c("Other Christian", "Protestant", "Orthodox", "LDS") ~ "Christian",
-      TRUE ~ rel_id2
+      rel_past_id2 %in% c("Buddhism", "Daoism", "Hinduism", "Islam", "Judaism", "Paganism", "Sikhism", "Unitarian") ~ "Other",
+      rel_past_id2 %in% c("Other Christian", "Protestant", "Orthodox", "LDS") ~ "Christian",
+      TRUE ~ rel_past_id2
     )
   )
 
@@ -593,7 +593,7 @@ table(p2_data$rel_past_id)
 
 ### Religious Trajectory (`relid_life`)
 
-We compare `rel_past_id` to `rel_id` to classify each respondent's trajectory. Only three combinations are explicitly handled — `Never` (not religious/spiritual at both waves), `Former` (religious at some point among Christian/Roman Catholic/Other, not religious/spiritual now), and `Current` (religious among Christian/Roman Catholic/Other at both waves). Everything else — including newly-religious respondents (not religious/spiritual in the past but religious now), anyone who switched between the grouped categories, and anyone whose past or current affiliation is one of the five ungrouped raw labels (Bahai, Confucianism, Jainism, Native American, Zoroastrianism) — falls to `NA`, to be resolved by the manual coding step below.
+We compare `rel_past_id` to `rel_curr_id` to classify each respondent's trajectory. Only three combinations are explicitly handled — `Never` (not religious/spiritual at both waves), `Former` (religious at some point among Christian/Roman Catholic/Other, not religious/spiritual now), and `Current` (religious among Christian/Roman Catholic/Other at both waves). Everything else — including newly-religious respondents (not religious/spiritual in the past but religious now), anyone who switched between the grouped categories, and anyone whose past or current affiliation is one of the five ungrouped raw labels (Bahai, Confucianism, Jainism, Native American, Zoroastrianism) — falls to `NA`, to be resolved by the manual coding step below.
 
 ```{r warning = FALSE}
 p2_data <- p2_data %>%
@@ -601,15 +601,15 @@ p2_data <- p2_data %>%
     relid_life = case_when(
       # Never: not religious (or spiritual) in both waves
       rel_past_id %in% c("Not Religious", "Spiritual") &
-        rel_id %in% c("Not Religious", "Spiritual") ~ "Never",
+        rel_curr_id %in% c("Not Religious", "Spiritual") ~ "Never",
 
       # Former: religious in the past, not religious (or spiritual) now
       rel_past_id %in% c("Christian", "Roman Catholic", "Other") &
-        rel_id %in% c("Not Religious", "Spiritual") ~ "Former",
+        rel_curr_id %in% c("Not Religious", "Spiritual") ~ "Former",
 
       # Current: religious in the past AND still religious now
       rel_past_id %in% c("Christian", "Roman Catholic", "Other") &
-        rel_id %in% c("Christian", "Roman Catholic", "Other") ~ "Current",
+        rel_curr_id %in% c("Christian", "Roman Catholic", "Other") ~ "Current",
 
       # Everything else (e.g., switched traditions, became religious, or
       # involves an ungrouped raw label) → NA, resolved manually below
@@ -625,16 +625,20 @@ table(p2_data$relid_life, useNA = "always")
 na_ids_auto <- p2_data$internal_id[is.na(p2_data$relid_life)]
 ```
 
-### Apply Manual Coding
+### Manual Coding
 
-Every respondent left `NA` above was independently reviewed by two coders (SK, NT) against their full set of religion responses, as part of the *Patterns of Religious Engagement* analysis. That review's resolved codes live in the `Final` column of `screen/RelID_Coding_062426.xlsx` (copied into this project's `screen/` folder), keyed by respondent ID. Rows with a resolved `Final` value (`Current`, `Former`, or `Never`) override the automatic classification above; rows where the coders disagreed, lacked data, or otherwise couldn't resolve the case are `NA` in `Final` and are **left untouched** — they keep whatever `relid_life` value they already had (which, since they all started out `NA`, means they simply remain `NA`).
+Because we knew our algorithm would not be 100% effective, every respondent left `NA` above was independently reviewed by two coders (SK, NT) against their full set of religion responses, as part of the *Patterns of Religious Engagement* analysis. That review's resolved codes live in the `Final` column of `screen/RelID_Coding_062426.xlsx` (copied into this project's `screen/` folder), keyed by respondent ID. Rows with a resolved `Final` value (`Current`, `Former`, or `Never`) override the automatic classification above; rows where the coders disagreed, lacked data, or otherwise couldn't resolve the case are `NA` in `Final` and are **left untouched** — they keep whatever `relid_life` value they already had (which, since they all started out `NA`, means they simply remain `NA`).
+
+
+
+### Apply Manual Coding
 
 The join key is `internal_id`, the sequential row number assigned to the full, unfiltered sample in `1_import.qmd`. Because this section runs before any row filtering (the "Addressing Errors" step below hasn't happened yet), and because `internal_id` was assigned immediately after import (mirroring how the ID was assigned in the *Patterns of Religious Engagement* project), the two ID schemes line up and the join is safe.
 
 ```{r}
-rel_id_code <- openxlsx::read.xlsx(here("screen", "RelID_Coding_062426.xlsx"))
+rel_curr_id_code <- openxlsx::read.xlsx(here("screen", "RelID_Coding_062426.xlsx"))
 
-manual_codes <- rel_id_code %>%
+manual_codes <- rel_curr_id_code %>%
   filter(!is.na(Final)) %>%
   select(internal_id, Final)
 
@@ -645,6 +649,16 @@ p2_data <- p2_data %>%
 
 table(p2_data$relid_life, useNA = "always")
 ```
+
+### Export Cleaned ResponseID + Religious Identity
+```{r}
+#| eval: false
+relid_data <- p2_data %>%
+  select(responseid, rel_curr_id, rel_past_id, relid_life)
+
+openxlsx::write.xlsx(relid_data, here("external_files/relid_codes_072126.xlsx"))
+```
+
 
 ## Addressing Errors
 ### Age
@@ -662,18 +676,6 @@ As we can see here, the value starts at 1, but the label starts at 18. Thus, we 
 
 ```{r}
 p2_data$ageyear <- p2_data$ageyear + 17
-table(p2_data$ageyear)
-hist(p2_data$ageyear)
-```
-
-Now you can see we have the correct range of ages. We can also notice that someone was 47 years old, and should not have qualified for our study. We will remove them. 
-
-```{r}
-key_columns <- c("responseid", "ageyear")
-
-p2_data <- p2_data %>%
-  filter(ageyear <= 30 | is.na(ageyear))
-
 table(p2_data$ageyear)
 hist(p2_data$ageyear)
 ```

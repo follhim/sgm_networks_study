@@ -1,33 +1,214 @@
 ---
-title: "Alter Variables"
+title: "Ego-Alter Variables"
 format:
   html: 
     toc: true
     toc-depth: 3
     embed-resources: true
-    code-fold: true
-    code-summary: "Click to see code"
 output: html_document
 editor_options: 
   chunk_output_type: console
 ---
-
 :::callout-note
-**Overall Summary**: This phase of data cleaning will 
+**Overall Summary**: This phase of data cleaning will
 
--  clean and correct any alter variables
--  create a long format datast
+- prepare data for creating ego-network datasets
+- correct alter variable names
+- correct alter values
 :::
-
 ## Preparations
 ### Packages
 ```{r}
-pacman::p_load(tidyverse, haven, here)
+pacman::p_load(tidyverse, haven, here, labelled, egor)
 ```
-
 ## Import Dataset
 ```{r}
 p3_data <- readRDS("work_data/p2_data.Rds")
+```
+
+## Prepare Data
+### Create EgoID variable
+```{r}
+p3_data <- p3_data |>
+  mutate(egoid = 1:n()) |>
+  select(egoid, everything())
+```
+
+### Remove All Text Variables
+EgoR package cannot create an ego network data if text variables/values exist. Thus if any variables contain text, we will drop.
+
+```{r}
+p3_data <- p3_data |> 
+  select(-contains("TEXT"))
+```
+
+## Correct Errors Variable Names
+### Alter Service Attendance 
+It looks like two variables were named incorrectly. The variable to measure service attendance of an alter is typically `alt_ra_X` where X = the number of the alter.
+Here's what that variable label looks like:
+
+```{r}
+get_variable_labels(p3_data$alt_ra_1)
+```
+
+However, there are two variables with **incorrect** variable names. 
+
+```{r}
+get_variable_labels(p3_data$alr_ra_2)
+get_variable_labels(p3_data$alr_ra_3)
+```
+
+Here, it's clear that the variables measure the same construct, yet they are named incorrectly. Let's fix that.
+
+```{r}
+p3_data <- rename(p3_data,
+                    alt_ra_2 = alr_ra_2,
+                    alt_ra_3 = alr_ra_3)
+```
+
+## Recode Values
+### Alter-Alter Ties 
+
+The value labels are coded in a manner that will bias our analyses later. 
+
+```{r}
+get_variable_labels(p3_data$ap1_2)
+get_value_labels(p3_data$ap1_2)
+```
+
+As you can see, `No = 2` while `Yes = 1`. However, when we calculate the sum, we want to make sure that we only count the `Yes`'s, thus it makes more sense to code No as 0, and Yes as 1. 
+
+```{r}
+p3_data <- p3_data |>
+  mutate(across(contains("ap1_") | contains("ap2_") | contains("ap3_") | contains("ap4_") | contains("ap5_") | contains("ap6_") | contains("ap7_") | contains("ap8_") | contains("ap9_"), ~ifelse(. == 2, 0, .)))
+```
+
+The code above specifies: `If value is equal to 2, then code as 0. If the condition is not true, leave as is`.
+
+### Religious Importance
+```{r}
+get_variable_labels(p3_data$alt_ri_1)
+get_value_labels(p3_data$alt_ri_1)
+table(p3_data$alt_ri_1)
+```
+
+Similar to above, we want to make `No` = 0, and `Yes` = 2, so we simply subtract 1 from all values. 
+
+```{r}
+p3_data <- p3_data |>
+  mutate(across(contains("alt_ri_"), ~. - 1))
+table(p3_data$alt_ri_1)
+```
+
+We then need to correct the value labels.
+
+```{r}
+p3_data <- set_value_labels(
+  p3_data,
+  alt_ri_1 = c(No = 0, Yes = 1),
+  alt_ri_2 = c(No = 0, Yes = 1),
+  alt_ri_3 = c(No = 0, Yes = 1),
+  alt_ri_4 = c(No = 0, Yes = 1),
+  alt_ri_5 = c(No = 0, Yes = 1),
+  alt_ri_6 = c(No = 0, Yes = 1),
+  alt_ri_7 = c(No = 0, Yes = 1),
+  alt_ri_8 = c(No = 0, Yes = 1),
+  alt_ri_9 = c(No = 0, Yes = 1),
+  alt_ri_10 = c(No = 0, Yes = 1)
+)
+```
+
+Let's check the updated value labels.
+
+```{r}
+get_value_labels(p3_data$alt_ri_1)
+```
+
+### Religious Attendance
+
+We need to recode values as missing for analytic purposes.
+
+```{r}
+get_value_labels(p3_data$alt_ra_1)
+table(p3_data$alt_ra_1)
+```
+
+If someone responded `I prefer to not answer` or `I don't know`, we will recode with missing. 
+
+```{r}
+p3_data <- p3_data |>
+  mutate(across(contains("alt_ra_"), ~na_if(., 8))) # I prefer to not answer
+p3_data <- p3_data |>
+  mutate(across(contains("alt_ra_"), ~na_if(., 7))) # I don't know
+```
+
+Let's see if it worked:
+
+```{r}
+get_value_labels(p3_data$alt_ra_1)
+table(p3_data$alt_ra_1)
+```
+Great, it worked!
+
+### Support from Alter
+
+Likewise for this variable.
+
+```{r}
+get_value_labels(p3_data$alt_idsupp_1_1)
+table(p3_data$alt_idsupp_1_1)
+```
+
+We need to recode `Does not apply` as missing.
+
+```{r}
+p3_data <- p3_data |>
+  mutate(across(contains("alt_idsupp_"), ~na_if(., 7))) # Does not apply
+```
+
+Let's see if it worked.
+
+```{r}
+get_value_labels(p3_data$alt_idsupp_1_1)
+table(p3_data$alt_idsupp_1_1)
+```
+
+## Create Ego Network Data
+
+Let's create our ego network data! 
+```{r}
+#| eval: false
+ego_object <- onefile_to_egor(
+  egos = p3_data,
+  ID.vars = list(ego = "egoid"),
+  attr.start.col = "alt_rel_1", # Name of Variable with the first alter attribute
+  attr.end.col = "alt_smv_conc_10", # Name of variable with last alter attribute
+  max.alters = 10, # Number of maximum alters that were named by participants
+  aa.first.var = "ap1_2") # Name of first alter-alter variable
+```
+
+The resulting output is an object that is comprised of 3 different datasets: EGO data (N = 953, Variables = 548), Alter data (N = 9,530, Variables = 145), and Alter-Alter Tie Data (N = 14,460; Variabels = 4).
+
+
+As the warning suggested, we need to remove invalid weights. A weight is invalid if it is empty, which signifies missing data. As such, we will remove those values. 
+
+```{r}
+#| eval: false
+ego_object <- ego_object |> 
+  activate(aatie) |> 
+  filter(weight != "")
+```
+
+Next, lets save our ego object. 
+```{r}
+#| eval: false
+saveRDS(ego_object, here("work_data/egor_object.rds"))
+```
+
+
+```{r}
+#| include: false
+ego_object <- readRDS(file =  here("work_data/egor_object.rds"))
 ```
 
 ## Save Results

@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Seungju Kim">
-<meta name="dcterms.date" content="2026-07-15">
 
-<title>SGM Network Study Dataset</title>
+<title>1&nbsp; Raw Data &amp; Initial Cleaning – SGM Network Study Dataset</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -32,7 +65,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./1_import.html" rel="next">
+<link href="./2_ego_var.html" rel="next">
+<link href="./index.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -249,7 +283,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./1_import.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Raw Data &amp; Initial Cleaning</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -280,13 +314,13 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./1_import.html" class="sidebar-item-text sidebar-link">
+  <a href="./1_import.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Raw Data &amp; Initial Cleaning</span></span></a>
   </div>
 </li>
@@ -318,13 +352,17 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a>
-  <ul class="collapse">
-  <li><a href="#how-does-it-work" id="toc-how-does-it-work" class="nav-link" data-scroll-target="#how-does-it-work">How does it work?</a></li>
-  <li><a href="#spot-any-errors" id="toc-spot-any-errors" class="nav-link" data-scroll-target="#spot-any-errors">Spot any errors?</a></li>
+  <li><a href="#preparations" id="toc-preparations" class="nav-link active" data-scroll-target="#preparations"><span class="header-section-number">1.1</span> Preparations</a>
+  <ul>
+  <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">Packages</a></li>
   </ul></li>
+  <li><a href="#import-dataset" id="toc-import-dataset" class="nav-link" data-scroll-target="#import-dataset"><span class="header-section-number">1.2</span> Import Dataset</a></li>
+  <li><a href="#codebook" id="toc-codebook" class="nav-link" data-scroll-target="#codebook"><span class="header-section-number">1.3</span> Codebook</a></li>
+  <li><a href="#lowercase-all-variable-names" id="toc-lowercase-all-variable-names" class="nav-link" data-scroll-target="#lowercase-all-variable-names"><span class="header-section-number">1.4</span> Lowercase All Variable Names</a></li>
+  <li><a href="#creating-an-id-variable" id="toc-creating-an-id-variable" class="nav-link" data-scroll-target="#creating-an-id-variable"><span class="header-section-number">1.5</span> Creating an ID variable</a></li>
+  <li><a href="#save-results" id="toc-save-results" class="nav-link" data-scroll-target="#save-results"><span class="header-section-number">1.6</span> Save Results</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/follhim/sgm_networks_study/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/follhim/sgm_networks_study/blob/main/index.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/follhim/sgm_networks_study/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/follhim/sgm_networks_study/blob/main/1_import.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -332,26 +370,14 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">SGM Network Study Dataset</h1>
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Raw Data &amp; Initial Cleaning</span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Seungju Kim </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">July 15, 2026</p>
-    </div>
-  </div>
   
     
   </div>
@@ -361,43 +387,56 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p>The purpose of this website is to document the data cleaning workflow for the <strong>SGM Network Study Dataset</strong>.</p>
-<p>This website contains the full data cleaning process from start to finish. The completed dataset can be found in a secure <strong>Box</strong> folder only accessible to approved researchers at the <strong>Ecologies of Liberation Lab</strong> at University of Illinois.</p>
-<p>As an ego network dataset, our data cleaning and scoring also contains uncommon workflows to score and prepare network data.</p>
-<p>You can also find notes from the latest edits on GitHub.</p>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<p>In stage 1, we import the raw dataset and make any necessary revisions to variable names.</p>
+<section id="preparations" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="preparations"><span class="header-section-number">1.1</span> Preparations</h2>
+<section id="packages" class="level3">
+<h3 class="anchored" data-anchor-id="packages">Packages</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, haven, here, memisc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>All code and data are processed locally. At no time is data stored on GitHub, even temporarily using memory.</p>
-</div>
-</div>
-<section id="how-does-it-work" class="level2">
-<h2 class="anchored" data-anchor-id="how-does-it-work">How does it work?</h2>
-<ol type="1">
-<li>This data cleaning workflow is performed locally on a laptop.</li>
-<li>Each phase is separated by its own R script file (<code>.qmd</code> file)</li>
-<li>Thus, each R script <em>chapter</em> reflects the actual underlying code used to clean and process data.</li>
-</ol>
-<p>This means that you can also directly suggest edits or corrections <strong>online</strong> (see section below).</p>
-<ol start="4" type="1">
-<li>Everytime the R code is changed or updated, GitHub will track and contain a comment (user must provide) that denotes what changes were made.</li>
-</ol>
 </section>
-<section id="spot-any-errors" class="level2">
-<h2 class="anchored" data-anchor-id="spot-any-errors">Spot any errors?</h2>
-<p>Open an issue in the corresponding chapter you are in. You can find the GitHub button on the top right. From there, you can detail what the problem is, and someone will work to resolve the issue.</p>
+</section>
+<section id="import-dataset" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="import-dataset"><span class="header-section-number">1.2</span> Import Dataset</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>p1_data <span class="ot">&lt;-</span> <span class="fu">read_sav</span>(<span class="fu">Sys.getenv</span>(<span class="st">"RAW_PATH"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="codebook" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="codebook"><span class="header-section-number">1.3</span> Codebook</h2>
+<p>We will generate a .txt file codebook.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Write</span>(<span class="fu">codebook</span>(p1_data),</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">"output_txt/raw_codebook.txt"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can find the raw codebook in the output_txt folder.</p>
+</section>
+<section id="lowercase-all-variable-names" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="lowercase-all-variable-names"><span class="header-section-number">1.4</span> Lowercase All Variable Names</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(p1_data) <span class="ot">&lt;-</span> <span class="fu">tolower</span>(<span class="fu">names</span>(p1_data))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="creating-an-id-variable" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="creating-an-id-variable"><span class="header-section-number">1.5</span> Creating an ID variable</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>p1_data<span class="sc">$</span>internal_id <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span>(<span class="fu">nrow</span>(p1_data))</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(p1_data<span class="sc">$</span>internal_id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 3 4 5 6</code></pre>
+</div>
+</div>
+<p>We create our own ID variable, but in this case we just made it correspond to their row number.</p>
+</section>
+<section id="save-results" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="save-results"><span class="header-section-number">1.6</span> Save Results</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(p1_data, <span class="st">"work_data/p1_data.Rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -815,10 +854,13 @@ Important
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link" aria-label="Preface">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./1_import.html" class="pagination-link" aria-label="Raw Data &amp; Initial Cleaning">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Raw Data &amp; Initial Cleaning</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./2_ego_var.html" class="pagination-link" aria-label="Demographic Variables">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Demographic Variables</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -827,4 +869,4 @@ Important
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/follhim/sgm_networks_study/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/follhim/sgm_networks_study/blob/main/index.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/follhim/sgm_networks_study/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/follhim/sgm_networks_study/blob/main/1_import.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div></div></footer></body></html>

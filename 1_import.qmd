@@ -40,16 +40,6 @@ You can find the raw codebook in the output_txt folder.
 names(p1_data) <- tolower(names(p1_data))
 ```
 
-## Removing Duplicates
-
-Here we will remove all resposnes that are exactly the same, which can be **truly** consider duplicates. 
-
-```{r}
-duplicated(p1_data)
-```
-
-Here we can see that there are no direct duplicates. So we will keep all participants here.
-
 ## Creating an ID variable
 
 ```{r}
