@@ -14,7 +14,7 @@
     "href": "index.html#spot-any-errors",
     "title": "SGM Network Study Dataset",
     "section": "Spot any errors?",
-    "text": "Spot any errors?\nOpen an issue in the corresponding chapter you are in. You can find the GitHub button on the top right. From there, you can detail what the problem is, and someone will work to resolve the issue.",
+    "text": "Spot any errors?\nOpen an issue in the corresponding chapter you are in. You can find the “Report an issue” GitHub button on the top right of every page. From there, you can detail what the problem is, and someone will work to resolve the issue.\nTracking and resolving through issues in GitHub is highly recommended as they are tracked and naturally logged into the history of changes/updates to the larger data cleaning workflow. This is crucial for returning to previous issues.",
     "crumbs": [
       "Preface"
     ]
@@ -384,7 +384,7 @@
     "href": "index.html#how-does-it-work",
     "title": "SGM Network Study Dataset",
     "section": "How does it work?",
-    "text": "How does it work?\n\nThis data cleaning workflow is performed locally on a laptop.\nEach phase is separated by its own R script file (.qmd file)\nThus, each R script chapter reflects the actual underlying code used to clean and process data.\n\nThis means that you can also directly suggest edits or corrections online (see section below).\n\nEverytime the R code is changed or updated, GitHub will track and contain a comment (user must provide) that denotes what changes were made.",
+    "text": "How does it work?\n\nThis data cleaning workflow is performed locally on a laptop.\nEach phase is separated by its own R script file (.qmd file)\nThus, each R script chapter reflects the actual underlying code used to clean and process data.\n\n\nThis means that you can also directly suggest edits or corrections online (see section below) which will be reflected in the data cleaning workflow.\n\n\nEverytime the R code is changed or updated, GitHub will track and contain a comment (user must provide) that denotes what changes were made.",
     "crumbs": [
       "Preface"
     ]
@@ -427,6 +427,16 @@
     "text": "3.6 Create Ego Network Data\nLet’s create our ego network data!\n\nego_object &lt;- onefile_to_egor(\n  egos = p3_data,\n  ID.vars = list(ego = \"egoid\"),\n  attr.start.col = \"alt_rel_1\", # Name of Variable with the first alter attribute\n  attr.end.col = \"alt_smv_conc_10\", # Name of variable with last alter attribute\n  max.alters = 10, # Number of maximum alters that were named by participants\n  aa.first.var = \"ap1_2\") # Name of first alter-alter variable\n\nThe resulting output is an object that is comprised of 3 different datasets: EGO data (N = 953, Variables = 548), Alter data (N = 9,530, Variables = 145), and Alter-Alter Tie Data (N = 14,460; Variabels = 4).\nAs the warning suggested, we need to remove invalid weights. A weight is invalid if it is empty, which signifies missing data. As such, we will remove those values.\n\nego_object &lt;- ego_object |&gt; \n  activate(aatie) |&gt; \n  filter(weight != \"\")\n\nNext, lets save our ego object.\n\nsaveRDS(ego_object, here(\"work_data/egor_object.rds\"))",
     "crumbs": [
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Ego-Alter Variables</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#progress",
+    "href": "index.html#progress",
+    "title": "SGM Network Study Dataset",
+    "section": "Progress?",
+    "text": "Progress?\nYou can track current unresolved and resolved issues here.",
+    "crumbs": [
+      "Preface"
     ]
   }
 ]

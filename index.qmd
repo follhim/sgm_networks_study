@@ -26,3 +26,7 @@ All code and data are processed locally. At no time is data stored on GitHub, ev
 Open an issue in the corresponding chapter you are in. You can find the "*Report an issue*" GitHub button on the **top right** of every page. From there, you can detail what the problem is, and someone will work to resolve the issue. 
 
 Tracking and resolving through **issues** in GitHub is highly recommended as they are tracked and naturally logged into the history of changes/updates to the larger data cleaning workflow. This is crucial for returning to previous issues.
+
+## Progress?
+
+You can track current unresolved and resolved issues [here](https://github.com/follhim/sgm_networks_study/issues). 
