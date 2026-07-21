@@ -2,12 +2,9 @@
 .Rhistory
 .RData
 .Ruserdata
-
 /.quarto/
-
 work_data/*
-.sav*
-.Rds*
-.xlsx*
-
-.renviron*
+*.sav
+*.Rds
+*.xlsx
+.Renviron
