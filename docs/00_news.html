@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Seungju Kim">
-<meta name="dcterms.date" content="2026-07-24">
 
-<title>SGM Network Study Dataset</title>
+<title>4&nbsp; Changelog – SGM Network Study Dataset</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -32,7 +30,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./1_import.html" rel="next">
+<link href="./3_alter_var.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -249,7 +247,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./00_news.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Changelog</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -280,7 +278,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
@@ -304,7 +302,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./00_news.html" class="sidebar-item-text sidebar-link">
+  <a href="./00_news.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Changelog</span></span></a>
   </div>
 </li>
@@ -318,14 +316,12 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a>
+  <li><a href="#section" id="toc-section" class="nav-link active" data-scroll-target="#section">07.24.26</a>
   <ul class="collapse">
-  <li><a href="#how-does-it-work" id="toc-how-does-it-work" class="nav-link" data-scroll-target="#how-does-it-work">How does it work?</a></li>
-  <li><a href="#spot-any-errors" id="toc-spot-any-errors" class="nav-link" data-scroll-target="#spot-any-errors">Spot any errors?</a></li>
-  <li><a href="#progress" id="toc-progress" class="nav-link" data-scroll-target="#progress">Progress?</a></li>
+  <li><a href="#ego-network" id="toc-ego-network" class="nav-link" data-scroll-target="#ego-network">3 - Ego Network</a></li>
   </ul></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/follhim/sgm_networks_study/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/follhim/sgm_networks_study/blob/main/index.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/follhim/sgm_networks_study/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/follhim/sgm_networks_study/blob/main/00_news.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -333,26 +329,14 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">SGM Network Study Dataset</h1>
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Changelog</span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Seungju Kim </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">July 24, 2026</p>
-    </div>
-  </div>
   
     
   </div>
@@ -362,47 +346,15 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1>
-<p>The purpose of this website is to document the data cleaning workflow for the <strong>SGM Network Study Dataset</strong>.</p>
-<p>This website contains the full data cleaning process from start to finish. The completed dataset can be found in a secure <strong>Box</strong> folder only accessible to approved researchers at the <strong>Ecologies of Liberation Lab</strong> at University of Illinois.</p>
-<p>As an ego network dataset, our data cleaning and scoring also contains uncommon workflows to score and prepare network data.</p>
-<p>You can also find notes from the latest edits on GitHub.</p>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>All code and data are processed locally. At no time is data stored on GitHub, even temporarily using memory.</p>
-</div>
-</div>
-<section id="how-does-it-work" class="level2">
-<h2 class="anchored" data-anchor-id="how-does-it-work">How does it work?</h2>
-<ol type="1">
-<li>This data cleaning workflow is performed locally on a laptop.</li>
-<li>Each phase is separated by its own R script file (<code>.qmd</code> file)</li>
-<li>Thus, each R script <em>chapter</em> reflects the actual underlying code used to clean and process data.</li>
-</ol>
-<blockquote class="blockquote">
-<p>This means that you can also directly suggest edits or corrections <strong>online</strong> (see section below) which will be reflected in the data cleaning workflow.</p>
-</blockquote>
-<ol start="4" type="1">
-<li>Everytime the R code is changed or updated, GitHub will track and contain a comment (user must provide) that denotes what changes were made.</li>
-</ol>
-</section>
-<section id="spot-any-errors" class="level2">
-<h2 class="anchored" data-anchor-id="spot-any-errors">Spot any errors?</h2>
-<p>Open an issue in the corresponding chapter you are in. You can find the “<em>Report an issue</em>” GitHub button on the <strong>top right</strong> of every page. From there, you can detail what the problem is, and someone will work to resolve the issue.</p>
-<p>Tracking and resolving through <strong>issues</strong> in GitHub is highly recommended as they are tracked and naturally logged into the history of changes/updates to the larger data cleaning workflow. This is crucial for returning to previous issues.</p>
-</section>
-<section id="progress" class="level2">
-<h2 class="anchored" data-anchor-id="progress">Progress?</h2>
-<p>You can track current unresolved and resolved issues <a href="https://github.com/follhim/sgm_networks_study/issues">here</a>.</p>
+<section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section">07.24.26</h2>
+<section id="ego-network" class="level3">
+<h3 class="anchored" data-anchor-id="ego-network">3 - Ego Network</h3>
+<ul>
+<li>Removed non-essential data cleaning</li>
+<li>Created network density</li>
+<li>Created total # of alter variable</li>
+</ul>
 
 
 </section>
@@ -823,11 +775,11 @@ Important
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./3_alter_var.html" class="pagination-link" aria-label="Ego-Network Variables">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Ego-Network Variables</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./1_import.html" class="pagination-link" aria-label="Raw Data &amp; Initial Cleaning">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Raw Data &amp; Initial Cleaning</span></span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->
@@ -835,4 +787,4 @@ Important
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/follhim/sgm_networks_study/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/follhim/sgm_networks_study/blob/main/index.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/follhim/sgm_networks_study/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/follhim/sgm_networks_study/blob/main/00_news.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></div></div></footer></body></html>

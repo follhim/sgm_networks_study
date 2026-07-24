@@ -11,6 +11,7 @@ book:
     - 1_import.qmd
     - 2_ego_var.qmd
     - 3_alter_var.qmd
+    - 00_news.qmd
   repo-url: https://github.com/follhim/sgm_networks_study
   repo-actions: [issue, source]
 

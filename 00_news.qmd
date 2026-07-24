@@ -1,0 +1,15 @@
+---
+title: "Changelog"
+editor_options: 
+  chunk_output_type: console
+format:
+  html:
+    number-depth: 1
+---
+
+## 07.24.26
+
+### 3 - Ego Network
+-  Removed non-essential data cleaning
+-  Created network density
+-  Created total # of alter variable

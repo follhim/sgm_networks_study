@@ -202,41 +202,41 @@
   {
     "objectID": "3_alter_var.html",
     "href": "3_alter_var.html",
-    "title": "3  Ego-Alter Variables",
+    "title": "3  Ego-Network Variables",
     "section": "",
     "text": "3.1 Preparations",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Ego-Alter Variables</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Ego-Network Variables</span>"
     ]
   },
   {
     "objectID": "3_alter_var.html#preparations",
     "href": "3_alter_var.html#preparations",
-    "title": "3  Ego-Alter Variables",
+    "title": "3  Ego-Network Variables",
     "section": "",
     "text": "Packages\n\npacman::p_load(tidyverse, haven, here, labelled, egor)",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Ego-Alter Variables</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Ego-Network Variables</span>"
     ]
   },
   {
     "objectID": "3_alter_var.html#import-dataset",
     "href": "3_alter_var.html#import-dataset",
-    "title": "3  Ego-Alter Variables",
+    "title": "3  Ego-Network Variables",
     "section": "3.2 Import Dataset",
     "text": "3.2 Import Dataset\n\np3_data &lt;- readRDS(\"work_data/p2_data.Rds\")",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Ego-Alter Variables</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Ego-Network Variables</span>"
     ]
   },
   {
     "objectID": "3_alter_var.html#save-results",
     "href": "3_alter_var.html#save-results",
-    "title": "3  Ego-Alter Variables",
+    "title": "3  Ego-Network Variables",
     "section": "3.7 Save Results",
     "text": "3.7 Save Results\n\nsaveRDS(p3_data, \"work_data/p3_data.Rds\")",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Ego-Alter Variables</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Ego-Network Variables</span>"
     ]
   },
   {
@@ -392,11 +392,11 @@
   {
     "objectID": "3_alter_var.html#prepare-data",
     "href": "3_alter_var.html#prepare-data",
-    "title": "3  Ego-Alter Variables",
+    "title": "3  Ego-Network Variables",
     "section": "3.3 Prepare Data",
     "text": "3.3 Prepare Data\n\nCreate EgoID variable\n\np3_data &lt;- p3_data |&gt;\n  mutate(egoid = 1:n()) |&gt;\n  select(egoid, everything())\n\n\n\nRemove All Text Variables\nEgoR package cannot create an ego network data if text variables/values exist. Thus if any variables contain text, we will drop.\n\np3_data &lt;- p3_data |&gt; \n  select(-contains(\"TEXT\"))",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Ego-Alter Variables</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Ego-Network Variables</span>"
     ]
   },
   {
@@ -422,11 +422,11 @@
   {
     "objectID": "3_alter_var.html#create-ego-network-data",
     "href": "3_alter_var.html#create-ego-network-data",
-    "title": "3  Ego-Alter Variables",
-    "section": "3.6 Create Ego Network Data",
-    "text": "3.6 Create Ego Network Data\nLet’s create our ego network data!\n\nego_object &lt;- onefile_to_egor(\n  egos = p3_data,\n  ID.vars = list(ego = \"egoid\"),\n  attr.start.col = \"alt_rel_1\", # Name of Variable with the first alter attribute\n  attr.end.col = \"alt_smv_conc_10\", # Name of variable with last alter attribute\n  max.alters = 10, # Number of maximum alters that were named by participants\n  aa.first.var = \"ap1_2\") # Name of first alter-alter variable\n\nThe resulting output is an object that is comprised of 3 different datasets: EGO data (N = 953, Variables = 548), Alter data (N = 9,530, Variables = 145), and Alter-Alter Tie Data (N = 14,460; Variabels = 4).\nAs the warning suggested, we need to remove invalid weights. A weight is invalid if it is empty, which signifies missing data. As such, we will remove those values.\n\nego_object &lt;- ego_object |&gt; \n  activate(aatie) |&gt; \n  filter(weight != \"\")\n\nNext, lets save our ego object.\n\nsaveRDS(ego_object, here(\"work_data/egor_object.rds\"))",
+    "title": "3  Ego-Network Variables",
+    "section": "3.5 Create Ego Network Data",
+    "text": "3.5 Create Ego Network Data\nLet’s create our ego network data!\n\nego_object &lt;- onefile_to_egor(\n  egos = p3_data,\n  ID.vars = list(ego = \"egoid\"),\n  attr.start.col = \"alt_rel_1\", # Name of Variable with the first alter attribute\n  attr.end.col = \"alt_smv_conc_10\", # Name of variable with last alter attribute\n  max.alters = 10, # Number of maximum alters that were named by participants\n  aa.first.var = \"ap1_2\") # Name of first alter-alter variable\n\n\nsaveRDS(ego_object, here(\"work_data/egor_object.Rds\"))\n\nThe resulting output is an object that is comprised of 3 different datasets: EGO data (N = 953, Variables = 548), Alter data (N = 9,530, Variables = 145), and Alter-Alter Tie Data (N = 14,460; Variabels = 4).\n\nCreate Merged Dataset\nHaving created the three different datasets, we want to create a dataset that merges the ego and alter data.\n\np3.1_data &lt;- ego_object$ego\n\np3.2_data &lt;- ego_object$alter\n\nWhat we’ve done above is create two datasets based on ego and alter (respectively). Now using the .egoID variable, lets merge these two datasets together.\n\np3.3_data &lt;- p3.2_data %&gt;%\n  left_join(p3.1_data, by = \".egoID\")",
     "crumbs": [
-      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Ego-Alter Variables</span>"
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Ego-Network Variables</span>"
     ]
   },
   {
@@ -437,6 +437,46 @@
     "text": "Progress?\nYou can track current unresolved and resolved issues here.",
     "crumbs": [
       "Preface"
+    ]
+  },
+  {
+    "objectID": "00_news.html",
+    "href": "00_news.html",
+    "title": "4  Changelog",
+    "section": "",
+    "text": "07.24.26",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Changelog</span>"
+    ]
+  },
+  {
+    "objectID": "00_news.html#section",
+    "href": "00_news.html#section",
+    "title": "4  Changelog",
+    "section": "",
+    "text": "3 - Ego Network\n\nRemoved non-essential data cleaning\nCreated network density\nCreated total # of alter variable",
+    "crumbs": [
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Changelog</span>"
+    ]
+  },
+  {
+    "objectID": "3_alter_var.html#correct-alter-alter-ties",
+    "href": "3_alter_var.html#correct-alter-alter-ties",
+    "title": "3  Ego-Network Variables",
+    "section": "3.4 Correct Alter-Alter Ties",
+    "text": "3.4 Correct Alter-Alter Ties\nThe value labels are coded in a manner that will bias how we calculate ego network characteristics.\n\nget_variable_labels(p3_data$ap1_2)\n\n[1] \"Do [QID1089-ChoiceTextEntryValue-1] and [QID1089-ChoiceTextEntryValue-2] talk to each other independently of you? In other words, do they have a relationship independently of you? For example, your parent and sibling might talk, but your parent and coworker might not.\"\n\nget_value_labels(p3_data$ap1_2)\n\n                  Yes                    No          I don't know \n                    1                     2                     3 \nChoose Not to Respond \n                    4 \n\n\nAs you can see, No = 2 while Yes = 1. However, when we calculate the sum, we want to make sure that we only count the Yes’s, thus it makes more sense to code No as 0, and Yes as 1.\n\np3_data &lt;- p3_data |&gt;\n  mutate(across(contains(\"ap1_\") | contains(\"ap2_\") | contains(\"ap3_\") | contains(\"ap4_\") | contains(\"ap5_\") | contains(\"ap6_\") | contains(\"ap7_\") | contains(\"ap8_\") | contains(\"ap9_\"), ~ifelse(. == 2, 0, .)))\n\nThe code above specifies: If value is equal to 2, then code as 0. If the condition is not true, leave as is.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Ego-Network Variables</span>"
+    ]
+  },
+  {
+    "objectID": "3_alter_var.html#create-network-characteristic-variables",
+    "href": "3_alter_var.html#create-network-characteristic-variables",
+    "title": "3  Ego-Network Variables",
+    "section": "3.6 Create Network Characteristic Variables",
+    "text": "3.6 Create Network Characteristic Variables\nA weight is invalid if it is empty, which signifies missing data. As such, we will remove those values. This is also essential as a weight must range between 0 to 1 to calculate network characteristic variables (e.g., network density).\n\nego_object &lt;- ego_object |&gt; \n  activate(aatie) |&gt; \n  filter(weight != \"\")\n\n\nNetwork Density\n\ndata_density &lt;- ego_density(ego_object)\ndata_density$.egoID &lt;- as.numeric(data_density$.egoID)\ndata_density$density &lt;- as.numeric(data_density$density)\npsych::describe(data_density$density)\n\n   vars   n mean   sd median trimmed  mad min max range skew kurtosis   se\nX1    1 954 0.34 0.26   0.29    0.31 0.26   0   1     1 0.79     0.04 0.01\n\ndata_density %&gt;%\n  ggplot(aes(x = density)) +\n  geom_bar()\n\n\n\n\n\n\n\n\nHere we can see that the average network density is 0.34 (SD = 0.26). Having created this variable, we want to merge with the larger dataset we are working with.\n\np3.3_data$.egoID &lt;- as.numeric(p3.3_data$.egoID)\np3.4_data &lt;- left_join(p3.3_data, data_density, by = \".egoID\")\n\n\n\nCreate Alter Sum\nNext, let’s create a variable for each ego that counts how many alters they named.\nWe do this by counting the distinct number of observations for each ego.\n\np3.3_data &lt;- p3.3_data %&gt;%\n  group_by(.egoID) %&gt;%\n  mutate(alt_sum = n_distinct(.altID)) %&gt;%\n  ungroup()\n\npsych::describe(p3.3_data$alt_sum)\n\n   vars    n mean sd median trimmed mad min max range skew kurtosis se\nX1    1 9540   10  0     10      10   0  10  10     0  NaN      NaN  0\n\n\nLooks like everyone named 10 alters.",
+    "crumbs": [
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Ego-Network Variables</span>"
     ]
   }
 ]

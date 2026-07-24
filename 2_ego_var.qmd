@@ -629,8 +629,6 @@ na_ids_auto <- p2_data$internal_id[is.na(p2_data$relid_life)]
 
 Because we knew our algorithm would not be 100% effective, every respondent left `NA` above was independently reviewed by two coders (SK, NT) against their full set of religion responses, as part of the *Patterns of Religious Engagement* analysis. That review's resolved codes live in the `Final` column of `screen/RelID_Coding_062426.xlsx` (copied into this project's `screen/` folder), keyed by respondent ID. Rows with a resolved `Final` value (`Current`, `Former`, or `Never`) override the automatic classification above; rows where the coders disagreed, lacked data, or otherwise couldn't resolve the case are `NA` in `Final` and are **left untouched** — they keep whatever `relid_life` value they already had (which, since they all started out `NA`, means they simply remain `NA`).
 
-
-
 ### Apply Manual Coding
 
 The join key is `internal_id`, the sequential row number assigned to the full, unfiltered sample in `1_import.qmd`. Because this section runs before any row filtering (the "Addressing Errors" step below hasn't happened yet), and because `internal_id` was assigned immediately after import (mirroring how the ID was assigned in the *Patterns of Religious Engagement* project), the two ID schemes line up and the join is safe.

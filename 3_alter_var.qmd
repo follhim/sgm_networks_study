@@ -1,5 +1,5 @@
 ---
-title: "Ego-Alter Variables"
+title: "Ego-Network Variables"
 format:
   html: 
     toc: true
@@ -42,34 +42,9 @@ p3_data <- p3_data |>
   select(-contains("TEXT"))
 ```
 
-## Correct Errors Variable Names
-### Alter Service Attendance 
-It looks like two variables were named incorrectly. The variable to measure service attendance of an alter is typically `alt_ra_X` where X = the number of the alter.
-Here's what that variable label looks like:
+## Correct Alter-Alter Ties 
 
-```{r}
-get_variable_labels(p3_data$alt_ra_1)
-```
-
-However, there are two variables with **incorrect** variable names. 
-
-```{r}
-get_variable_labels(p3_data$alr_ra_2)
-get_variable_labels(p3_data$alr_ra_3)
-```
-
-Here, it's clear that the variables measure the same construct, yet they are named incorrectly. Let's fix that.
-
-```{r}
-p3_data <- rename(p3_data,
-                    alt_ra_2 = alr_ra_2,
-                    alt_ra_3 = alr_ra_3)
-```
-
-## Recode Values
-### Alter-Alter Ties 
-
-The value labels are coded in a manner that will bias our analyses later. 
+The value labels are coded in a manner that will bias how we calculate ego network characteristics. 
 
 ```{r}
 get_variable_labels(p3_data$ap1_2)
@@ -85,94 +60,6 @@ p3_data <- p3_data |>
 
 The code above specifies: `If value is equal to 2, then code as 0. If the condition is not true, leave as is`.
 
-### Religious Importance
-```{r}
-get_variable_labels(p3_data$alt_ri_1)
-get_value_labels(p3_data$alt_ri_1)
-table(p3_data$alt_ri_1)
-```
-
-Similar to above, we want to make `No` = 0, and `Yes` = 2, so we simply subtract 1 from all values. 
-
-```{r}
-p3_data <- p3_data |>
-  mutate(across(contains("alt_ri_"), ~. - 1))
-table(p3_data$alt_ri_1)
-```
-
-We then need to correct the value labels.
-
-```{r}
-p3_data <- set_value_labels(
-  p3_data,
-  alt_ri_1 = c(No = 0, Yes = 1),
-  alt_ri_2 = c(No = 0, Yes = 1),
-  alt_ri_3 = c(No = 0, Yes = 1),
-  alt_ri_4 = c(No = 0, Yes = 1),
-  alt_ri_5 = c(No = 0, Yes = 1),
-  alt_ri_6 = c(No = 0, Yes = 1),
-  alt_ri_7 = c(No = 0, Yes = 1),
-  alt_ri_8 = c(No = 0, Yes = 1),
-  alt_ri_9 = c(No = 0, Yes = 1),
-  alt_ri_10 = c(No = 0, Yes = 1)
-)
-```
-
-Let's check the updated value labels.
-
-```{r}
-get_value_labels(p3_data$alt_ri_1)
-```
-
-### Religious Attendance
-
-We need to recode values as missing for analytic purposes.
-
-```{r}
-get_value_labels(p3_data$alt_ra_1)
-table(p3_data$alt_ra_1)
-```
-
-If someone responded `I prefer to not answer` or `I don't know`, we will recode with missing. 
-
-```{r}
-p3_data <- p3_data |>
-  mutate(across(contains("alt_ra_"), ~na_if(., 8))) # I prefer to not answer
-p3_data <- p3_data |>
-  mutate(across(contains("alt_ra_"), ~na_if(., 7))) # I don't know
-```
-
-Let's see if it worked:
-
-```{r}
-get_value_labels(p3_data$alt_ra_1)
-table(p3_data$alt_ra_1)
-```
-Great, it worked!
-
-### Support from Alter
-
-Likewise for this variable.
-
-```{r}
-get_value_labels(p3_data$alt_idsupp_1_1)
-table(p3_data$alt_idsupp_1_1)
-```
-
-We need to recode `Does not apply` as missing.
-
-```{r}
-p3_data <- p3_data |>
-  mutate(across(contains("alt_idsupp_"), ~na_if(., 7))) # Does not apply
-```
-
-Let's see if it worked.
-
-```{r}
-get_value_labels(p3_data$alt_idsupp_1_1)
-table(p3_data$alt_idsupp_1_1)
-```
-
 ## Create Ego Network Data
 
 Let's create our ego network data! 
@@ -185,33 +72,84 @@ ego_object <- onefile_to_egor(
   attr.end.col = "alt_smv_conc_10", # Name of variable with last alter attribute
   max.alters = 10, # Number of maximum alters that were named by participants
   aa.first.var = "ap1_2") # Name of first alter-alter variable
+
+
+saveRDS(ego_object, here("work_data/egor_object.Rds"))
+```
+
+```{r}
+#| include: FALSE
+ego_object <- readRDS(here("work_data/egor_object.Rds"))
 ```
 
 The resulting output is an object that is comprised of 3 different datasets: EGO data (N = 953, Variables = 548), Alter data (N = 9,530, Variables = 145), and Alter-Alter Tie Data (N = 14,460; Variabels = 4).
 
+### Create Merged Dataset
 
-As the warning suggested, we need to remove invalid weights. A weight is invalid if it is empty, which signifies missing data. As such, we will remove those values. 
+Having created the three different datasets, we want to create a dataset that merges the ego and alter data. 
 
 ```{r}
-#| eval: false
+p3.1_data <- ego_object$ego
+
+p3.2_data <- ego_object$alter
+```
+
+What we've done above is create two datasets based on ego and alter (respectively). Now using the .egoID variable, lets merge these two datasets together. 
+
+```{r}
+p3.3_data <- p3.2_data %>%
+  left_join(p3.1_data, by = ".egoID")
+```
+
+## Create Network Characteristic Variables
+
+A weight is invalid if it is empty, which signifies missing data. As such, we will remove those values. This is also **essential** as a weight must range between 0 to 1 to calculate network characteristic variables (e.g., network density).
+
+```{r}
 ego_object <- ego_object |> 
   activate(aatie) |> 
   filter(weight != "")
 ```
 
-Next, lets save our ego object. 
-```{r}
-#| eval: false
-saveRDS(ego_object, here("work_data/egor_object.rds"))
-```
-
+### Network Density
 
 ```{r}
-#| include: false
-ego_object <- readRDS(file =  here("work_data/egor_object.rds"))
+data_density <- ego_density(ego_object)
+data_density$.egoID <- as.numeric(data_density$.egoID)
+data_density$density <- as.numeric(data_density$density)
+psych::describe(data_density$density)
+
+data_density %>%
+  ggplot(aes(x = density)) +
+  geom_bar()
 ```
+
+Here we can see that the average network density is 0.34 (SD = 0.26). Having created this variable, we want to merge with the larger dataset we are working with. 
+
+```{r}
+p3.3_data$.egoID <- as.numeric(p3.3_data$.egoID)
+p3.4_data <- left_join(p3.3_data, data_density, by = ".egoID")
+```
+
+### Create Alter Sum 
+
+Next, let's create a variable for each ego that counts how many alters they named. 
+
+We do this by counting the distinct number of observations for each ego. 
+
+```{r}
+p3.3_data <- p3.3_data %>%
+  group_by(.egoID) %>%
+  mutate(alt_sum = n_distinct(.altID)) %>%
+  ungroup()
+
+psych::describe(p3.3_data$alt_sum)
+```
+
+Looks like everyone named 10 alters.
 
 ## Save Results
 ```{r}
+
 saveRDS(p3_data, "work_data/p3_data.Rds")
 ```
