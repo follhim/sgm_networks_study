@@ -19,7 +19,7 @@ editor_options:
 ## Preparations
 ### Packages
 ```{r}
-pacman::p_load(tidyverse, haven, here, labelled, egor)
+pacman::p_load(tidyverse, haven, here, labelled, egor, igraph)
 ```
 ## Import Dataset
 ```{r}
@@ -148,8 +148,102 @@ psych::describe(p3.3_data$alt_sum)
 
 Looks like everyone named 10 alters.
 
+## Create igraph Object
+
+To create component variables, we need to convert the egoR object into an igraph object.
+
+```{r}
+#| eval: false
+igraphs <- as_igraph(ego_object)
+saveRDS(igraphs, here("work_data/igraphs.Rds"))
+```
+
+```{r}
+#| include: FALSE
+igraphs <- readRDS(here("work_data/igraphs.Rds"))
+```
+
+Here we can previous whan the igraph output looks like for Ego1.
+```{r}
+print(igraphs[[1]])
+```
+
+### Network Components (Fragmentation)
+
+`components()` identifies clusters of alters who are connected to each other, independent of ego. An ego whose alters split into several components has a *fragmented* network — the alters don't all know one another, so ego sits at the center of several disconnected social worlds. An ego with one component has a fully reachable network, at least in terms of connectivity (this doesn't necessarily mean the network is *dense*).
+
+We calculate, for each ego: 
+-  the number of components, and 
+-  the proportion of alters who fall in the largest component (a common fragmentation index — closer to 1 means most alters are reachable from one another; lower values indicate a more splintered network).
+
+```{r}
+data_components <- tibble(
+  .egoID = sapply(igraphs, function(g) graph_attr(g, ".egoID")),
+  n_components = sapply(igraphs, function(g) components(g)$no),
+  largest_component_size = sapply(igraphs, function(g) max(components(g)$csize)),
+  prop_largest_component = sapply(igraphs, function(g)
+    max(components(g)$csize) / vcount(g))
+)
+
+data_components$.egoID <- as.numeric(data_components$.egoID)
+psych::describe(data_components[, c("n_components", "prop_largest_component")])
+
+data_components %>%
+  ggplot(aes(x = n_components)) +
+  geom_bar()
+```
+
+Having created these variables, we merge them into the larger dataset.
+
+```{r}
+p3.4_data <- left_join(p3.4_data, data_components, by = ".egoID")
+```
+
+### Network Centrality
+
+Centrality measures describe *positions of individual alters* within an ego's network, rather than the network as a whole. To turn them into ego-level variables, we take two approaches: (1) summarize the alter-level scores (mean, max) across each ego's alters, and (2) use igraph's *centralization* functions, which collapse alter-level centrality into a single Freeman-style graph index — how dominated the network is by one or a few central alters (0 = evenly distributed, 1 = a pure hub/star structure).
+
+**Betweenness** identifies "broker" alters — those who sit on the shortest path between two other alters. A network with high betweenness centralization is one where a single alter (or few) bridges otherwise-separate parts of ego's social world.
+
+**Edge betweenness** applies the same logic to ties rather than alters — it flags which alter-alter connections are critical bridges holding the network together (removing them would disconnect otherwise-linked parts of the network).
+
+**Closeness** captures how quickly each alter can be reached from every other alter on average. High closeness centralization means the network revolves around one or a few well-embedded alters, rather than everyone being roughly equidistant from one another.
+
+```{r}
+#| warning: false
+data_centrality <- tibble(
+  .egoID = sapply(igraphs, function(g) graph_attr(g, ".egoID")),
+
+  # Alter-level betweenness, summarized to the ego level
+  mean_betweenness = sapply(igraphs, function(g) mean(betweenness(g), na.rm = TRUE)),
+  max_betweenness  = sapply(igraphs, function(g) max(betweenness(g), na.rm = TRUE)),
+
+  # Edge-level betweenness, summarized to the ego level
+  mean_edge_betweenness = sapply(igraphs, function(g) mean(edge_betweenness(g), na.rm = TRUE)),
+
+  # Alter-level closeness, summarized to the ego level
+  mean_closeness = sapply(igraphs, function(g) mean(closeness(g), na.rm = TRUE)),
+
+  # Graph-level centralization indices (Freeman-style)
+  centralization_betweenness = sapply(igraphs, function(g) centr_betw(g)$centralization),
+  centralization_closeness   = sapply(igraphs, function(g) centr_clo(g)$centralization)
+)
+
+data_centrality$.egoID <- as.numeric(data_centrality$.egoID)
+psych::describe(data_centrality[, c("centralization_betweenness", "centralization_closeness")])
+
+data_centrality %>%
+  ggplot(aes(x = centralization_betweenness)) +
+  geom_bar()
+```
+
+Having created these variables, we merge them into the larger dataset.
+
+```{r}
+p3.4_data <- left_join(p3.4_data, data_centrality, by = ".egoID")
+```
+
 ## Save Results
 ```{r}
-
-saveRDS(p3_data, "work_data/p3_data.Rds")
+saveRDS(p3.4_data, "work_data/p3_data.Rds")
 ```

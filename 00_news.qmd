@@ -7,6 +7,12 @@ format:
     number-depth: 1
 ---
 
+## 07.27.26
+
+### 3- Ego Network
+-  Created component variables
+-  Created centrality variables
+
 ## 07.24.26
 
 ### 3 - Ego Network
