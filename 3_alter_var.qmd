@@ -42,6 +42,19 @@ p3_data <- p3_data |>
   select(-contains("TEXT"))
 ```
 
+## Correct Variable Names
+
+```{r}
+p3_data <- p3_data %>%
+  rename(
+  # NEW var = OLD var
+  alt_convs_2 = alt_cons_2,
+  alt_ra_2 = alr_ra_2,
+  alt_ra_3 = alr_ra_3
+  )
+```
+
+
 ## Correct Alter-Alter Ties 
 
 The value labels are coded in a manner that will bias how we calculate ego network characteristics. 
@@ -148,6 +161,12 @@ psych::describe(p3.3_data$alt_sum)
 
 Looks like everyone named 10 alters.
 
+`alt_sum` was added to `p3.3_data` after `p3.4_data` was already created, so it needs to be explicitly merged in.
+
+```{r}
+p3.4_data <- left_join(p3.4_data, p3.3_data %>% distinct(.egoID, alt_sum), by = ".egoID")
+```
+
 ## Create igraph Object
 
 To create component variables, we need to convert the egoR object into an igraph object.
@@ -243,7 +262,53 @@ Having created these variables, we merge them into the larger dataset.
 p3.4_data <- left_join(p3.4_data, data_centrality, by = ".egoID")
 ```
 
+## Create Separate Datasets
+
+Now that all ego-level network characteristics have been merged in, let's split the data into the three datasets we actually want to work with: ego data (one row per ego), ego-alter data (one row per alter, with ego attributes attached), and alter-alter data (the tie list).
+
+### Ego Data
+
+```{r}
+p3_ego_data <- p3.1_data %>%
+  mutate(.egoID = as.numeric(.egoID)) %>%
+  left_join(data_density, by = ".egoID") %>%
+  left_join(data_components, by = ".egoID") %>%
+  left_join(data_centrality, by = ".egoID") %>%
+  left_join(p3.3_data %>% distinct(.egoID, alt_sum), by = ".egoID")
+```
+
+### Ego-Alter Data
+
+`p3.4_data` already *is* our ego-alter dataset — one row per alter, with the ego's survey responses and all ego-level network characteristics attached to every alter row.
+
+```{r}
+p3_ego_alter_data <- p3.4_data
+```
+
+### Alter-Alter Data
+
+```{r}
+p3_alter_alter_data <- ego_object$aatie
+```
+
 ## Save Results
 ```{r}
 saveRDS(p3.4_data, "work_data/p3_data.Rds")
+```
+
+### Codebooks
+
+We will generate a .txt codebook for the ego data and ego-alter data (the alter-alter tie list is just IDs and a weight, so it doesn't need one).
+
+```{r}
+#| eval: FALSE
+memisc::Write(memisc::codebook(p3_ego_data),
+      file = "output_txt/p3_ego_data_codebook.txt")
+
+memisc::Write(memisc::codebook(p3_ego_alter_data),
+      file = "output_txt/p3_ego_alter_data_codebook.txt")
+
+writexl::write_xlsx(p3_ego_data, "work_data/p3_ego_data.xlsx")
+writexl::write_xlsx(p3_ego_alter_data, "work_data/p3_ego_alter_data.xlsx")
+writexl::write_xlsx(p3_alter_alter_data, "work_data/p3_alter_alter_data.xlsx")
 ```

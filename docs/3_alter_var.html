@@ -4092,22 +4092,32 @@ vertical-align: -.125em;
   <li><a href="#create-egoid-variable" id="toc-create-egoid-variable" class="nav-link" data-scroll-target="#create-egoid-variable">Create EgoID variable</a></li>
   <li><a href="#remove-all-text-variables" id="toc-remove-all-text-variables" class="nav-link" data-scroll-target="#remove-all-text-variables">Remove All Text Variables</a></li>
   </ul></li>
-  <li><a href="#correct-alter-alter-ties" id="toc-correct-alter-alter-ties" class="nav-link" data-scroll-target="#correct-alter-alter-ties"><span class="header-section-number">3.4</span> Correct Alter-Alter Ties</a></li>
-  <li><a href="#create-ego-network-data" id="toc-create-ego-network-data" class="nav-link" data-scroll-target="#create-ego-network-data"><span class="header-section-number">3.5</span> Create Ego Network Data</a>
+  <li><a href="#correct-variable-names" id="toc-correct-variable-names" class="nav-link" data-scroll-target="#correct-variable-names"><span class="header-section-number">3.4</span> Correct Variable Names</a></li>
+  <li><a href="#correct-alter-alter-ties" id="toc-correct-alter-alter-ties" class="nav-link" data-scroll-target="#correct-alter-alter-ties"><span class="header-section-number">3.5</span> Correct Alter-Alter Ties</a></li>
+  <li><a href="#create-ego-network-data" id="toc-create-ego-network-data" class="nav-link" data-scroll-target="#create-ego-network-data"><span class="header-section-number">3.6</span> Create Ego Network Data</a>
   <ul class="collapse">
   <li><a href="#create-merged-dataset" id="toc-create-merged-dataset" class="nav-link" data-scroll-target="#create-merged-dataset">Create Merged Dataset</a></li>
   </ul></li>
-  <li><a href="#create-network-characteristic-variables" id="toc-create-network-characteristic-variables" class="nav-link" data-scroll-target="#create-network-characteristic-variables"><span class="header-section-number">3.6</span> Create Network Characteristic Variables</a>
+  <li><a href="#create-network-characteristic-variables" id="toc-create-network-characteristic-variables" class="nav-link" data-scroll-target="#create-network-characteristic-variables"><span class="header-section-number">3.7</span> Create Network Characteristic Variables</a>
   <ul class="collapse">
   <li><a href="#network-density" id="toc-network-density" class="nav-link" data-scroll-target="#network-density">Network Density</a></li>
   <li><a href="#create-alter-sum" id="toc-create-alter-sum" class="nav-link" data-scroll-target="#create-alter-sum">Create Alter Sum</a></li>
   </ul></li>
-  <li><a href="#create-igraph-object" id="toc-create-igraph-object" class="nav-link" data-scroll-target="#create-igraph-object"><span class="header-section-number">3.7</span> Create igraph Object</a>
+  <li><a href="#create-igraph-object" id="toc-create-igraph-object" class="nav-link" data-scroll-target="#create-igraph-object"><span class="header-section-number">3.8</span> Create igraph Object</a>
   <ul class="collapse">
   <li><a href="#network-components-fragmentation" id="toc-network-components-fragmentation" class="nav-link" data-scroll-target="#network-components-fragmentation">Network Components (Fragmentation)</a></li>
   <li><a href="#network-centrality" id="toc-network-centrality" class="nav-link" data-scroll-target="#network-centrality">Network Centrality</a></li>
   </ul></li>
-  <li><a href="#save-results" id="toc-save-results" class="nav-link" data-scroll-target="#save-results"><span class="header-section-number">3.8</span> Save Results</a></li>
+  <li><a href="#create-separate-datasets" id="toc-create-separate-datasets" class="nav-link" data-scroll-target="#create-separate-datasets"><span class="header-section-number">3.9</span> Create Separate Datasets</a>
+  <ul class="collapse">
+  <li><a href="#ego-data" id="toc-ego-data" class="nav-link" data-scroll-target="#ego-data">Ego Data</a></li>
+  <li><a href="#ego-alter-data" id="toc-ego-alter-data" class="nav-link" data-scroll-target="#ego-alter-data">Ego-Alter Data</a></li>
+  <li><a href="#alter-alter-data" id="toc-alter-alter-data" class="nav-link" data-scroll-target="#alter-alter-data">Alter-Alter Data</a></li>
+  </ul></li>
+  <li><a href="#save-results" id="toc-save-results" class="nav-link" data-scroll-target="#save-results"><span class="header-section-number">3.10</span> Save Results</a>
+  <ul class="collapse">
+  <li><a href="#codebooks" id="toc-codebooks" class="nav-link" data-scroll-target="#codebooks">Codebooks</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/follhim/sgm_networks_study/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li><li><a href="https://github.com/follhim/sgm_networks_study/blob/main/3_alter_var.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div></nav>
     </div>
@@ -4186,15 +4196,27 @@ Note
 </div>
 </section>
 </section>
-<section id="correct-alter-alter-ties" class="level2" data-number="3.4">
-<h2 data-number="3.4" class="anchored" data-anchor-id="correct-alter-alter-ties"><span class="header-section-number">3.4</span> Correct Alter-Alter Ties</h2>
+<section id="correct-variable-names" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="correct-variable-names"><span class="header-section-number">3.4</span> Correct Variable Names</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>p3_data <span class="ot">&lt;-</span> p3_data <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># NEW var = OLD var</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">alt_convs_2 =</span> alt_cons_2,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">alt_ra_2 =</span> alr_ra_2,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">alt_ra_3 =</span> alr_ra_3</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="correct-alter-alter-ties" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="correct-alter-alter-ties"><span class="header-section-number">3.5</span> Correct Alter-Alter Ties</h2>
 <p>The value labels are coded in a manner that will bias how we calculate ego network characteristics.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_variable_labels</span>(p3_data<span class="sc">$</span>ap1_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_variable_labels</span>(p3_data<span class="sc">$</span>ap1_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Do [QID1089-ChoiceTextEntryValue-1] and [QID1089-ChoiceTextEntryValue-2] talk to each other independently of you? In other words, do they have a relationship independently of you? For example, your parent and sibling might talk, but your parent and coworker might not."</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_value_labels</span>(p3_data<span class="sc">$</span>ap1_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_value_labels</span>(p3_data<span class="sc">$</span>ap1_2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                  Yes                    No          I don't know 
                     1                     2                     3 
@@ -4204,64 +4226,64 @@ Choose Not to Respond
 </div>
 <p>As you can see, <code>No = 2</code> while <code>Yes = 1</code>. However, when we calculate the sum, we want to make sure that we only count the <code>Yes</code>’s, thus it makes more sense to code No as 0, and Yes as 1.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>p3_data <span class="ot">&lt;-</span> p3_data <span class="sc">|&gt;</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">contains</span>(<span class="st">"ap1_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap2_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap3_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap4_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap5_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap6_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap7_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap8_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap9_"</span>), <span class="sc">~</span><span class="fu">ifelse</span>(. <span class="sc">==</span> <span class="dv">2</span>, <span class="dv">0</span>, .)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>p3_data <span class="ot">&lt;-</span> p3_data <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">contains</span>(<span class="st">"ap1_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap2_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap3_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap4_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap5_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap6_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap7_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap8_"</span>) <span class="sc">|</span> <span class="fu">contains</span>(<span class="st">"ap9_"</span>), <span class="sc">~</span><span class="fu">ifelse</span>(. <span class="sc">==</span> <span class="dv">2</span>, <span class="dv">0</span>, .)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The code above specifies: <code>If value is equal to 2, then code as 0. If the condition is not true, leave as is</code>.</p>
 </section>
-<section id="create-ego-network-data" class="level2" data-number="3.5">
-<h2 data-number="3.5" class="anchored" data-anchor-id="create-ego-network-data"><span class="header-section-number">3.5</span> Create Ego Network Data</h2>
+<section id="create-ego-network-data" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="create-ego-network-data"><span class="header-section-number">3.6</span> Create Ego Network Data</h2>
 <p>Let’s create our ego network data!</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ego_object <span class="ot">&lt;-</span> <span class="fu">onefile_to_egor</span>(</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">egos =</span> p3_data,</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ID.vars =</span> <span class="fu">list</span>(<span class="at">ego =</span> <span class="st">"egoid"</span>),</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">attr.start.col =</span> <span class="st">"alt_rel_1"</span>, <span class="co"># Name of Variable with the first alter attribute</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">attr.end.col =</span> <span class="st">"alt_smv_conc_10"</span>, <span class="co"># Name of variable with last alter attribute</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">max.alters =</span> <span class="dv">10</span>, <span class="co"># Number of maximum alters that were named by participants</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">aa.first.var =</span> <span class="st">"ap1_2"</span>) <span class="co"># Name of first alter-alter variable</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(ego_object, <span class="fu">here</span>(<span class="st">"work_data/egor_object.Rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ego_object <span class="ot">&lt;-</span> <span class="fu">onefile_to_egor</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">egos =</span> p3_data,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ID.vars =</span> <span class="fu">list</span>(<span class="at">ego =</span> <span class="st">"egoid"</span>),</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">attr.start.col =</span> <span class="st">"alt_rel_1"</span>, <span class="co"># Name of Variable with the first alter attribute</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">attr.end.col =</span> <span class="st">"alt_smv_conc_10"</span>, <span class="co"># Name of variable with last alter attribute</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">max.alters =</span> <span class="dv">10</span>, <span class="co"># Number of maximum alters that were named by participants</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">aa.first.var =</span> <span class="st">"ap1_2"</span>) <span class="co"># Name of first alter-alter variable</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(ego_object, <span class="fu">here</span>(<span class="st">"work_data/egor_object.Rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The resulting output is an object that is comprised of 3 different datasets: EGO data (N = 953, Variables = 548), Alter data (N = 9,530, Variables = 145), and Alter-Alter Tie Data (N = 14,460; Variabels = 4).</p>
 <section id="create-merged-dataset" class="level3">
 <h3 class="anchored" data-anchor-id="create-merged-dataset">Create Merged Dataset</h3>
 <p>Having created the three different datasets, we want to create a dataset that merges the ego and alter data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.1</span>_data <span class="ot">&lt;-</span> ego_object<span class="sc">$</span>ego</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.2</span>_data <span class="ot">&lt;-</span> ego_object<span class="sc">$</span>alter</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.1</span>_data <span class="ot">&lt;-</span> ego_object<span class="sc">$</span>ego</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.2</span>_data <span class="ot">&lt;-</span> ego_object<span class="sc">$</span>alter</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>What we’ve done above is create two datasets based on ego and alter (respectively). Now using the .egoID variable, lets merge these two datasets together.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.3</span>_data <span class="ot">&lt;-</span> p3<span class="fl">.2</span>_data <span class="sc">%&gt;%</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(p3<span class="fl">.1</span>_data, <span class="at">by =</span> <span class="st">".egoID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.3</span>_data <span class="ot">&lt;-</span> p3<span class="fl">.2</span>_data <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(p3<span class="fl">.1</span>_data, <span class="at">by =</span> <span class="st">".egoID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
-<section id="create-network-characteristic-variables" class="level2" data-number="3.6">
-<h2 data-number="3.6" class="anchored" data-anchor-id="create-network-characteristic-variables"><span class="header-section-number">3.6</span> Create Network Characteristic Variables</h2>
+<section id="create-network-characteristic-variables" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="create-network-characteristic-variables"><span class="header-section-number">3.7</span> Create Network Characteristic Variables</h2>
 <p>A weight is invalid if it is empty, which signifies missing data. As such, we will remove those values. This is also <strong>essential</strong> as a weight must range between 0 to 1 to calculate network characteristic variables (e.g., network density).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ego_object <span class="ot">&lt;-</span> ego_object <span class="sc">|&gt;</span> </span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">activate</span>(aatie) <span class="sc">|&gt;</span> </span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(weight <span class="sc">!=</span> <span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ego_object <span class="ot">&lt;-</span> ego_object <span class="sc">|&gt;</span> </span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">activate</span>(aatie) <span class="sc">|&gt;</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(weight <span class="sc">!=</span> <span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="network-density" class="level3">
 <h3 class="anchored" data-anchor-id="network-density">Network Density</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>data_density <span class="ot">&lt;-</span> <span class="fu">ego_density</span>(ego_object)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>data_density<span class="sc">$</span>.egoID <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(data_density<span class="sc">$</span>.egoID)</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>data_density<span class="sc">$</span>density <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(data_density<span class="sc">$</span>density)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">describe</span>(data_density<span class="sc">$</span>density)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>data_density <span class="ot">&lt;-</span> <span class="fu">ego_density</span>(ego_object)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>data_density<span class="sc">$</span>.egoID <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(data_density<span class="sc">$</span>.egoID)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>data_density<span class="sc">$</span>density <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(data_density<span class="sc">$</span>density)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">describe</span>(data_density<span class="sc">$</span>density)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   vars   n mean   sd median trimmed  mad min max range skew kurtosis   se
 X1    1 954 0.34 0.26   0.29    0.31 0.26   0   1     1 0.79     0.04 0.01</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>data_density <span class="sc">%&gt;%</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> density)) <span class="sc">+</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>data_density <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> density)) <span class="sc">+</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -4272,8 +4294,8 @@ X1    1 954 0.34 0.26   0.29    0.31 0.26   0   1     1 0.79     0.04 0.01</code
 </div>
 <p>Here we can see that the average network density is 0.34 (SD = 0.26). Having created this variable, we want to merge with the larger dataset we are working with.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.3</span>_data<span class="sc">$</span>.egoID <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(p3<span class="fl">.3</span>_data<span class="sc">$</span>.egoID)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.4</span>_data <span class="ot">&lt;-</span> <span class="fu">left_join</span>(p3<span class="fl">.3</span>_data, data_density, <span class="at">by =</span> <span class="st">".egoID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.3</span>_data<span class="sc">$</span>.egoID <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(p3<span class="fl">.3</span>_data<span class="sc">$</span>.egoID)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.4</span>_data <span class="ot">&lt;-</span> <span class="fu">left_join</span>(p3<span class="fl">.3</span>_data, data_density, <span class="at">by =</span> <span class="st">".egoID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="create-alter-sum" class="level3">
@@ -4281,30 +4303,34 @@ X1    1 954 0.34 0.26   0.29    0.31 0.26   0   1     1 0.79     0.04 0.01</code
 <p>Next, let’s create a variable for each ego that counts how many alters they named.</p>
 <p>We do this by counting the distinct number of observations for each ego.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.3</span>_data <span class="ot">&lt;-</span> p3<span class="fl">.3</span>_data <span class="sc">%&gt;%</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(.egoID) <span class="sc">%&gt;%</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">alt_sum =</span> <span class="fu">n_distinct</span>(.altID)) <span class="sc">%&gt;%</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">describe</span>(p3<span class="fl">.3</span>_data<span class="sc">$</span>alt_sum)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.3</span>_data <span class="ot">&lt;-</span> p3<span class="fl">.3</span>_data <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(.egoID) <span class="sc">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">alt_sum =</span> <span class="fu">n_distinct</span>(.altID)) <span class="sc">%&gt;%</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">describe</span>(p3<span class="fl">.3</span>_data<span class="sc">$</span>alt_sum)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   vars    n mean sd median trimmed mad min max range skew kurtosis se
 X1    1 9540   10  0     10      10   0  10  10     0  NaN      NaN  0</code></pre>
 </div>
 </div>
 <p>Looks like everyone named 10 alters.</p>
+<p><code>alt_sum</code> was added to <code>p3.3_data</code> after <code>p3.4_data</code> was already created, so it needs to be explicitly merged in.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.4</span>_data <span class="ot">&lt;-</span> <span class="fu">left_join</span>(p3<span class="fl">.4</span>_data, p3<span class="fl">.3</span>_data <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(.egoID, alt_sum), <span class="at">by =</span> <span class="st">".egoID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 </section>
-<section id="create-igraph-object" class="level2" data-number="3.7">
-<h2 data-number="3.7" class="anchored" data-anchor-id="create-igraph-object"><span class="header-section-number">3.7</span> Create igraph Object</h2>
+<section id="create-igraph-object" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="create-igraph-object"><span class="header-section-number">3.8</span> Create igraph Object</h2>
 <p>To create component variables, we need to convert the egoR object into an igraph object.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>igraphs <span class="ot">&lt;-</span> <span class="fu">as_igraph</span>(ego_object)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(igraphs, <span class="fu">here</span>(<span class="st">"work_data/igraphs.Rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>igraphs <span class="ot">&lt;-</span> <span class="fu">as_igraph</span>(ego_object)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(igraphs, <span class="fu">here</span>(<span class="st">"work_data/igraphs.Rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Here we can previous whan the igraph output looks like for Ego1.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(igraphs[[<span class="dv">1</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(igraphs[[<span class="dv">1</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>IGRAPH 60344ec DNW- 10 10 -- 
 + attr: .egoID (g/c), name (v/c), .egoID (v/c), alt_rel_ (v/n),
@@ -4360,16 +4386,16 @@ X1    1 9540   10  0     10      10   0  10  10     0  NaN      NaN  0</code></p
 <p><code>components()</code> identifies clusters of alters who are connected to each other, independent of ego. An ego whose alters split into several components has a <em>fragmented</em> network — the alters don’t all know one another, so ego sits at the center of several disconnected social worlds. An ego with one component has a fully reachable network, at least in terms of connectivity (this doesn’t necessarily mean the network is <em>dense</em>).</p>
 <p>We calculate, for each ego: - the number of components, and - the proportion of alters who fall in the largest component (a common fragmentation index — closer to 1 means most alters are reachable from one another; lower values indicate a more splintered network).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>data_components <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">.egoID =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">graph_attr</span>(g, <span class="st">".egoID"</span>)),</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">n_components =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">components</span>(g)<span class="sc">$</span>no),</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">largest_component_size =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">max</span>(<span class="fu">components</span>(g)<span class="sc">$</span>csize)),</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">prop_largest_component =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g)</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">max</span>(<span class="fu">components</span>(g)<span class="sc">$</span>csize) <span class="sc">/</span> <span class="fu">vcount</span>(g))</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>data_components<span class="sc">$</span>.egoID <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(data_components<span class="sc">$</span>.egoID)</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">describe</span>(data_components[, <span class="fu">c</span>(<span class="st">"n_components"</span>, <span class="st">"prop_largest_component"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>data_components <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">.egoID =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">graph_attr</span>(g, <span class="st">".egoID"</span>)),</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">n_components =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">components</span>(g)<span class="sc">$</span>no),</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">largest_component_size =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">max</span>(<span class="fu">components</span>(g)<span class="sc">$</span>csize)),</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">prop_largest_component =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">max</span>(<span class="fu">components</span>(g)<span class="sc">$</span>csize) <span class="sc">/</span> <span class="fu">vcount</span>(g))</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>data_components<span class="sc">$</span>.egoID <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(data_components<span class="sc">$</span>.egoID)</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">describe</span>(data_components[, <span class="fu">c</span>(<span class="st">"n_components"</span>, <span class="st">"prop_largest_component"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                       vars   n mean   sd median trimmed  mad min max range
 n_components              1 954 3.80 3.09    3.0    3.38 2.97 1.0  10   9.0
@@ -4378,9 +4404,9 @@ prop_largest_component    2 954 0.65 0.32    0.7    0.67 0.44 0.1   1   0.9
 n_components            1.00    -0.35 0.10
 prop_largest_component -0.41    -1.17 0.01</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>data_components <span class="sc">%&gt;%</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> n_components)) <span class="sc">+</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>data_components <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> n_components)) <span class="sc">+</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -4391,7 +4417,7 @@ prop_largest_component -0.41    -1.17 0.01</code></pre>
 </div>
 <p>Having created these variables, we merge them into the larger dataset.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.4</span>_data <span class="ot">&lt;-</span> <span class="fu">left_join</span>(p3<span class="fl">.4</span>_data, data_components, <span class="at">by =</span> <span class="st">".egoID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.4</span>_data <span class="ot">&lt;-</span> <span class="fu">left_join</span>(p3<span class="fl">.4</span>_data, data_components, <span class="at">by =</span> <span class="st">".egoID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="network-centrality" class="level3">
@@ -4401,26 +4427,26 @@ prop_largest_component -0.41    -1.17 0.01</code></pre>
 <p><strong>Edge betweenness</strong> applies the same logic to ties rather than alters — it flags which alter-alter connections are critical bridges holding the network together (removing them would disconnect otherwise-linked parts of the network).</p>
 <p><strong>Closeness</strong> captures how quickly each alter can be reached from every other alter on average. High closeness centralization means the network revolves around one or a few well-embedded alters, rather than everyone being roughly equidistant from one another.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>data_centrality <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">.egoID =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">graph_attr</span>(g, <span class="st">".egoID"</span>)),</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Alter-level betweenness, summarized to the ego level</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_betweenness =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">mean</span>(<span class="fu">betweenness</span>(g), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_betweenness  =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">max</span>(<span class="fu">betweenness</span>(g), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Edge-level betweenness, summarized to the ego level</span></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_edge_betweenness =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">mean</span>(<span class="fu">edge_betweenness</span>(g), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Alter-level closeness, summarized to the ego level</span></span>
-<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_closeness =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">mean</span>(<span class="fu">closeness</span>(g), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
-<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Graph-level centralization indices (Freeman-style)</span></span>
-<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">centralization_betweenness =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">centr_betw</span>(g)<span class="sc">$</span>centralization),</span>
-<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">centralization_closeness   =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">centr_clo</span>(g)<span class="sc">$</span>centralization)</span>
-<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>data_centrality<span class="sc">$</span>.egoID <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(data_centrality<span class="sc">$</span>.egoID)</span>
-<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">describe</span>(data_centrality[, <span class="fu">c</span>(<span class="st">"centralization_betweenness"</span>, <span class="st">"centralization_closeness"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>data_centrality <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">.egoID =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">graph_attr</span>(g, <span class="st">".egoID"</span>)),</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Alter-level betweenness, summarized to the ego level</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_betweenness =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">mean</span>(<span class="fu">betweenness</span>(g), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_betweenness  =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">max</span>(<span class="fu">betweenness</span>(g), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Edge-level betweenness, summarized to the ego level</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_edge_betweenness =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">mean</span>(<span class="fu">edge_betweenness</span>(g), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Alter-level closeness, summarized to the ego level</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_closeness =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">mean</span>(<span class="fu">closeness</span>(g), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Graph-level centralization indices (Freeman-style)</span></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">centralization_betweenness =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">centr_betw</span>(g)<span class="sc">$</span>centralization),</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">centralization_closeness   =</span> <span class="fu">sapply</span>(igraphs, <span class="cf">function</span>(g) <span class="fu">centr_clo</span>(g)<span class="sc">$</span>centralization)</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>data_centrality<span class="sc">$</span>.egoID <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(data_centrality<span class="sc">$</span>.egoID)</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">describe</span>(data_centrality[, <span class="fu">c</span>(<span class="st">"centralization_betweenness"</span>, <span class="st">"centralization_closeness"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                           vars   n mean   sd median trimmed  mad min  max
 centralization_betweenness    1 954 0.02 0.03   0.01    0.02 0.02   0 0.23
@@ -4429,9 +4455,9 @@ centralization_closeness      2   0  NaN   NA     NA     NaN   NA Inf -Inf
 centralization_betweenness  0.23  1.9     4.38  0
 centralization_closeness    -Inf   NA       NA NA</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>data_centrality <span class="sc">%&gt;%</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> centralization_betweenness)) <span class="sc">+</span></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>data_centrality <span class="sc">%&gt;%</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> centralization_betweenness)) <span class="sc">+</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -4442,17 +4468,60 @@ centralization_closeness    -Inf   NA       NA NA</code></pre>
 </div>
 <p>Having created these variables, we merge them into the larger dataset.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.4</span>_data <span class="ot">&lt;-</span> <span class="fu">left_join</span>(p3<span class="fl">.4</span>_data, data_centrality, <span class="at">by =</span> <span class="st">".egoID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>p3<span class="fl">.4</span>_data <span class="ot">&lt;-</span> <span class="fu">left_join</span>(p3<span class="fl">.4</span>_data, data_centrality, <span class="at">by =</span> <span class="st">".egoID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
-<section id="save-results" class="level2" data-number="3.8">
-<h2 data-number="3.8" class="anchored" data-anchor-id="save-results"><span class="header-section-number">3.8</span> Save Results</h2>
+<section id="create-separate-datasets" class="level2" data-number="3.9">
+<h2 data-number="3.9" class="anchored" data-anchor-id="create-separate-datasets"><span class="header-section-number">3.9</span> Create Separate Datasets</h2>
+<p>Now that all ego-level network characteristics have been merged in, let’s split the data into the three datasets we actually want to work with: ego data (one row per ego), ego-alter data (one row per alter, with ego attributes attached), and alter-alter data (the tie list).</p>
+<section id="ego-data" class="level3">
+<h3 class="anchored" data-anchor-id="ego-data">Ego Data</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(p3<span class="fl">.4</span>_data, <span class="st">"work_data/p3_data.Rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>p3_ego_data <span class="ot">&lt;-</span> p3<span class="fl">.1</span>_data <span class="sc">%&gt;%</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">.egoID =</span> <span class="fu">as.numeric</span>(.egoID)) <span class="sc">%&gt;%</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(data_density, <span class="at">by =</span> <span class="st">".egoID"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(data_components, <span class="at">by =</span> <span class="st">".egoID"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(data_centrality, <span class="at">by =</span> <span class="st">".egoID"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(p3<span class="fl">.3</span>_data <span class="sc">%&gt;%</span> <span class="fu">distinct</span>(.egoID, alt_sum), <span class="at">by =</span> <span class="st">".egoID"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="ego-alter-data" class="level3">
+<h3 class="anchored" data-anchor-id="ego-alter-data">Ego-Alter Data</h3>
+<p><code>p3.4_data</code> already <em>is</em> our ego-alter dataset — one row per alter, with the ego’s survey responses and all ego-level network characteristics attached to every alter row.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>p3_ego_alter_data <span class="ot">&lt;-</span> p3<span class="fl">.4</span>_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="alter-alter-data" class="level3">
+<h3 class="anchored" data-anchor-id="alter-alter-data">Alter-Alter Data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>p3_alter_alter_data <span class="ot">&lt;-</span> ego_object<span class="sc">$</span>aatie</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="save-results" class="level2" data-number="3.10">
+<h2 data-number="3.10" class="anchored" data-anchor-id="save-results"><span class="header-section-number">3.10</span> Save Results</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(p3<span class="fl">.4</span>_data, <span class="st">"work_data/p3_data.Rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="codebooks" class="level3">
+<h3 class="anchored" data-anchor-id="codebooks">Codebooks</h3>
+<p>We will generate a .txt codebook for the ego data and ego-alter data (the alter-alter tie list is just IDs and a weight, so it doesn’t need one).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>memisc<span class="sc">::</span><span class="fu">Write</span>(memisc<span class="sc">::</span><span class="fu">codebook</span>(p3_ego_data),</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">"output_txt/p3_ego_data_codebook.txt"</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>memisc<span class="sc">::</span><span class="fu">Write</span>(memisc<span class="sc">::</span><span class="fu">codebook</span>(p3_ego_alter_data),</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">"output_txt/p3_ego_alter_data_codebook.txt"</span>)</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>writexl<span class="sc">::</span><span class="fu">write_xlsx</span>(p3_ego_data, <span class="st">"work_data/p3_ego_data.xlsx"</span>)</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>writexl<span class="sc">::</span><span class="fu">write_xlsx</span>(p3_ego_alter_data, <span class="st">"work_data/p3_ego_alter_data.xlsx"</span>)</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>writexl<span class="sc">::</span><span class="fu">write_xlsx</span>(p3_alter_alter_data, <span class="st">"work_data/p3_alter_alter_data.xlsx"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
