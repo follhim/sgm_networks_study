@@ -46,6 +46,16 @@ p5_ego_data <- p5_ego_data %>%
   select(-(aw_fet1:aw_fet5))
 ```
 
+### Manual Fix
+```{r}
+p5_ego_data <- p5_ego_data %>%
+  mutate(across(c(sex_id_combo, sex1:sex2, sex4, 
+                  not_rel, rel_curr_id1, rel_curr_id,
+                  rel_past_id2, rel_past_id,
+                  relid_life), as.factor))
+```
+
+
 ### Create Codebook
 ```{r}
 source("functions/codebook_html.R")
