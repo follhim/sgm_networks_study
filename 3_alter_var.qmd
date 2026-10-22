@@ -294,6 +294,7 @@ p3_alter_alter_data <- ego_object$aatie
 ## Save Results
 ```{r}
 saveRDS(p3.4_data, "work_data/p3_data.Rds")
+saveRDS(p3_ego_data, "work_data/p3_ego_data.Rds")
 ```
 
 ### Codebooks

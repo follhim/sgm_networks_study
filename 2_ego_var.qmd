@@ -55,7 +55,7 @@ First we recode missing values on each `rei_*` item to 0 (not selected), then pa
 ```{r}
 p2_data <- p2_data %>%
   mutate(
-    across(all_of(paste0("rei_", 1:11)), ~ ifelse(is.na(.x), 0, .x)),
+    across(all_of(paste0("rei_", 1:11)), ~ replace_na(.x, 0)),
 
     race_combo = paste0(
       ifelse(rei_1 == 1, "White_", ""),
@@ -241,7 +241,7 @@ As with race/ethnicity, we first recode missing values to 0, then paste together
 ```{r}
 p2_data <- p2_data %>%
   mutate(
-    across(all_of(paste0("si_", 1:10)), ~ ifelse(is.na(.x), 0, .x)),
+    across(all_of(paste0("si_", 1:10)), ~ replace_na(.x, 0)),
 
     sex_id_combo = paste0(
       ifelse(si_1 == 1, "Gay_", ""),
@@ -673,7 +673,9 @@ haven::print_labels(p2_data$ageyear)
 As we can see here, the value starts at 1, but the label starts at 18. Thus, we can just add `17` to all the values to correspond to the correct label. 
 
 ```{r}
-p2_data$ageyear <- p2_data$ageyear + 17
+age_lab <- attr(p2_data$ageyear, "label")
+p2_data$ageyear <- as.numeric(p2_data$ageyear) + 17
+attr(p2_data$ageyear, "label") <- age_lab
 table(p2_data$ageyear)
 hist(p2_data$ageyear)
 ```

@@ -1,0 +1,55 @@
+---
+title: "Codebook Preparation"
+format:
+  html: 
+    toc: true
+    toc-depth: 3
+    embed-resources: true
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+:::callout-note
+**Overall Summary**: This phase of data cleaning will
+
+-  Create codebooks for public release
+:::
+
+## Preparations
+### Packages
+```{r}
+pacman::p_load(tidyverse, haven, labelled)
+```
+
+### Import Dataset
+```{r}
+p5_ego_data <- readRDS("work_data/p2_data.Rds")
+```
+
+## Ego Data
+### Drop Alter Items
+```{r}
+p5_ego_data <- p5_ego_data %>%
+  select(-(523:2071))
+```
+
+### Drop Duplicates and Abnormal Respondents
+```{r}
+p5_ego_data <- p5_ego_data %>%
+  filter(ageyear < 30)
+```
+
+### Drop Non-Public Items
+```{r}
+p5_ego_data <- p5_ego_data %>%
+  select(-(aw_fet1:aw_fet5))
+```
+
+### Create Codebook
+```{r}
+source("functions/codebook_html.R")
+
+codebook_html(p5_ego_data, "output_txt/codebook.html", title = "SGM Networks Codebook - Public Access")
+```
+
