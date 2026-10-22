@@ -50,6 +50,6 @@ p5_ego_data <- p5_ego_data %>%
 ```{r}
 source("functions/codebook_html.R")
 
-codebook_html(p5_ego_data, "output_txt/codebook.html", title = "SGM Networks Codebook - Public Access")
+codebook_html(p5_ego_data, "docs/codebook.html", title = "SGM Networks Codebook - Public Access")
 ```
 
