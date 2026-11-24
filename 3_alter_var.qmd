@@ -66,12 +66,16 @@ get_value_labels(p3_data$ap1_2)
 
 As you can see, `No = 2` while `Yes = 1`. However, when we calculate the sum, we want to make sure that we only count the `Yes`'s, thus it makes more sense to code No as 0, and Yes as 1. 
 
+But moreover, the problem is that any value above 0 treats it as "Yes", thus we need to code responses 3 and 4 as `NA`.
+
 ```{r}
 p3_data <- p3_data |>
-  mutate(across(contains("ap1_") | contains("ap2_") | contains("ap3_") | contains("ap4_") | contains("ap5_") | contains("ap6_") | contains("ap7_") | contains("ap8_") | contains("ap9_"), ~ifelse(. == 2, 0, .)))
+  mutate(across(matches("^ap\\d+_\\d+$"),
+                ~ case_when(. == 1 ~ 1,
+                            . == 2 ~ 0,
+                            . %in% c(3, 4) ~ NA_real_,
+                            .default = NA_real_)))
 ```
-
-The code above specifies: `If value is equal to 2, then code as 0. If the condition is not true, leave as is`.
 
 ## Create Ego Network Data
 
