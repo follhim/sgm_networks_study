@@ -7,6 +7,20 @@ format:
     number-depth: 1
 ---
 
+## 11.24.26
+
+### 3: Ego Network
+-  Corrected alter-alter tie coding (`ap1_2`–`ap9_10`): Yes = 1, No = 0, I don't know / Choose not to respond = `NA`, so only Yes counts as a tie (previously ~2,400 "I don't know"/"Choose not to respond" responses were counted as ties)
+-  Changed tie filter to keep only `weight == 1` (mirrors Allyson's `filter(weight == "Yes")`)
+-  Removed blank alters from network calculations, with a check on the number of ties before/after (`n_ties_lost`); no egos are removed
+-  Corrected `alt_sum` to count named (non-blank) alters (0–10); previously it was 10 for everyone
+-  Density now uses each network's own number of possible pairs; `NA` for egos with fewer than 2 named alters
+-  Network-level measures (components, centrality, centralization) set to `NA` for egos with fewer than 2 named alters instead of 0 or `-Inf`; added `weights = NA` to all centrality calls
+-  Created alter-level variables: degree (`alt_degree`, `alt_degree_norm`; #13), betweenness (`alt_betweenness`, `alt_betweenness_norm`; #15), harmonic closeness (`alt_closeness`; #16), and local transitivity (`alt_transitivity`)
+-  Created tie-level edge betweenness (`aa_edge_betweenness`) in the alter-alter data
+-  Saved alter-alter data (`work_data/p3_alter_alter_data.Rds`)
+-  Switched continuous plots (density, centralization) to histograms
+
 ## 08.13.26
 
 ### 3: Ego Network

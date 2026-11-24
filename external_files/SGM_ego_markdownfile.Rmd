@@ -1,0 +1,464 @@
+---
+title: "SGM Network Project RMarkdown files"
+output:
+  word_document: default
+  html_document: default
+date: "2024-07-29"
+runtime: shiny
+---
+Allyson M. Blackburn
+
+The below R Markdown file is to load and begin cleaning the data into egoR and igraph to conduct the ego-centric network analyses for the SGM Network Project. This R Markdown file also shows examples for how to reshape data for analyses, create level 2 variables, merge these data with a larger file to be able to export a CSV to conduct multi-level modeling. I also walk through how to write multi-level models in lme4. The last chunk of code introduces a shiny app to begin using data visualizations. 
+
+Three are a few important items to consider here before you begin
+1) Check to see throughout to make sure that the variables are up to date. Variable names have likely changed, so you may need to update this code accordingly. 
+2) Opening up a new R project in the folder that you save all of your files will make it easy to load into the R project.
+3) Updates in packages can impact how some code runs. 
+4) You may need to reinstall R to make sure you have a version that is compatible with some of these softwares.
+5) I found when going through these code that on occasion by exporting fies into various formats, naming conventions were not consistent. You might want to double check to confirm that the id variables--- egoID and alterID, are consistent.
+6) Additionally R on occasion defaults to character variables when creating dataframes. I've included code below for R to endeavor to detect what kind of variable it is, but, it doesn't always land. This is especially important because when you merge across dataframes, the variable type needs to be the same across datarames. 
+
+
+First, load the libraries we will need. If you do not have these packages loaded, you will need to remove the hashtags. There may be additional files here.  
+
+```{r}
+library(readr)
+library(dplyr)
+#install.packages("devtools")
+#install.packages("tidyverse")
+library(tidyverse)
+#install.packages("purrr")
+library(purrr)
+#install.packages("magrittr")
+library(magrittr)
+#install.packages("igraph")
+library(igraph)
+#install.packages("egor")
+library(egor)
+#install.packages("janitor")
+library(janitor)
+#install.packages("igraph")
+library(igraph)
+#install.packages("ggraph")
+library(ggraph)
+#install.packages("tidygraph")
+library(tidygraph)
+#install.packages("skimr")
+library(skimr)
+#install.packages("broom.mixed")
+#library(broom.mixed)
+#install.packages("lmer4")
+#library(lmer4)
+#install.packages("car")
+library(car)
+#install.packages("statnet")
+library(statnet)
+#install.packages("ergm")
+library(ergm)
+#install.packages("tergm")
+library(tergm)
+#install.packages("network")
+library(network)
+#install.packages("lmerTest")
+library(lmerTest)
+#install.packages("lattice")
+library(lattice)
+#install.packages("lattice")
+#library(ggplot2)
+#install.packages("stringi")
+#library(stringi)
+#install.packages("texreg")
+#library(texreg)
+#install.packages("optimx")
+#library(optimx)
+library(lme4)
+library(lmerTest)
+## Warning: replacing previous import 'vctrs::data_frame' by 'tibble::data_frame'
+## when loading 'dplyr'
+library(texreg)
+library(optimx)
+#install.packages("data.table")
+library(data.table)
+
+
+data <- read_csv("SGM_Ego_July 29, 2024_14.43.csv")
+data <- data[3:nrow(data),]
+
+```
+
+
+Now, we create our ego id. The code below created an egoID, calling it egoID so that each participant has a unique identifier (since, our dataset did not create one). 
+
+```{r}
+data$egoID <- 1:nrow(data)
+```
+
+
+When you run the above code, you'll notice that the number of variables increased by 1. 
+We have some additional data that we do not want to use to calcualte network variables. 
+
+Let's go ahead and make our dataset just a litte simpler. 
+
+```{r}
+library(dplyr)
+
+# Select columns from B to E
+current_network <- data %>% select(StartDate:Q1481)
+
+# Print the new dataset
+print(current_network)
+current_network$egoID <- 1:nrow(data)
+
+# Identify columns that start with "StartDate" and end with "Q858"
+
+```
+
+We're going to try rearranging the data as well, so that it is in the order that the qualtrics demo assumes it should be. The below code pulls apart our data and then puts it back together in the correct order.
+
+```{r}
+library(dplyr)
+
+# create a dataframe for just ego_vars
+ego_vars <- data %>% select(StartDate:auditc3)
+print(ego_vars)
+ego_vars$egoID <- 1:nrow(data)
+print(ego_vars)
+
+#create a dataframe just for the alter list
+alterlist_vars <- data %>% select (alt_list_1:alt_list_10)
+print(alterlist_vars)
+alterlist_vars$egoID <- 1:nrow(data)
+print(alterlist_vars)
+
+#create a dataframe for just alter attributes
+alter_vars <- data %>% select(alt1_rel:Q1481)
+print(alter_vars)
+alter_vars$egoID <- 1:nrow(data)
+alter_vars <- alter_vars %>% select(-alt1_gi_8_TEXT, -Q1164_30_TEXT, -Q1200_30_TEXT, -Q1200_30_TEXT, -Q1236_30_TEXT, -Q1236_30_TEXT, -Q1272_30_TEXT, -Q1308_30_TEXT, -Q1380_30_TEXT, -Q1416_30_TEXT)
+print(alter_vars)
+
+#create a dataframe for just alter pairs
+alterpairs_vars <- data %>% select(ap1_2:ap9_10)
+print(alterpairs_vars)
+alterpairs_vars$egoID <- 1:nrow(data)
+print(alterpairs_vars)
+
+```
+
+Now we have four distinct dataframes for each of the three types of data we might use (plus the alter list, which is important). Thus, let's go ahead and put it in following order: Ego data, Alter attributes, and alter pairs (we collected it in Ego data, Alter pairs, and Alter attributes, as you may recall!)
+
+
+```{r}
+
+# First, merge ego_vars and alterlist_vars
+merged1 <- ego_vars %>%
+  inner_join(alterlist_vars, by = "egoID")
+
+# Then, merge the result with alter_vars
+merged2 <- merged1 %>%
+  inner_join(alter_vars, by = "egoID")
+
+# Finally, merge the result with alterpairs_vars
+final_merged <- merged2 %>%
+  inner_join(alterpairs_vars, by = "egoID")
+
+write.csv(alter_vars, "alter_vars.csv", row.names= FALSE)
+
+```
+
+
+Next, we'll load the egoR package and use that package to create the information about these variables. 
+
+
+```{r}
+#install.packages(egor)
+library(egor)
+
+e1 <- onefile_to_egor(egos = final_merged,
+                      ID.vars = list(ego = "egoID"),
+                      attr.start.col = "alt1_rel", # Name of Variable with the first alter attribute
+                      attr.end.col = "Q1481", # Name of variable with last alter attribute
+                      max.alters = 10, # Number of maximum alters that were named by participants
+                      aa.first.var = "ap1_2") # Name of first alter-alter variable
+
+
+
+```
+
+
+Below, we need to now make sure that any egos who had alters who did not exist have those observations removed. E.g., if someone only listed 9 alters, we want their missing data for alter 10 removed. 
+
+We also need to filter out the alter-alter ties where a participant does not indicate that there is a relationship, there shoul *only* be alter-alter ties for individuals who *have* relationships. The weight value does not matter in this case. 
+
+```{r}
+
+alter_filter <- 
+  e1 %>% 
+  as_tibble() %>% 
+  arrange(.egoID) %>% 
+  select(alt_list_1:alt_list_10) %>% 
+  mutate(across(.fns = ~. != "")) %>% 
+  as.data.frame() %>% 
+  tidyr::pivot_longer(cols = everything()) %>% 
+  pull(value)
+
+print(alter_filter)
+
+e1 <- 
+  e1 %>% 
+  activate(aatie) %>% 
+  filter(weight != "")
+
+summary(e1)
+
+##filter only to include those who responded "Yes" so that we can create accurate images and have accurate information about density.##
+
+e1 <-
+      e1 |>
+      activate(aatie) |>
+      filter(weight == "Yes") |>
+      activate(ego)
+
+#we are going to want to use denisty in our modeling. The below code creates a dataframe that has two variables, egoID and density. We will merge this dataframe into a larger dataframe later. We also need to make sure we rename the variable egoID to be consistent with other data frames.   
+
+ego_density <- ego_density(e1)
+#ego_density <- ego_density %>%
+  #rename (egoID = .egoID)
+
+##
+```
+
+
+We can see within our file entitled e1 that we have three objects within this list we can look at.
+
+```{r}
+
+print(e1[['ego']])
+
+print(e1[['alter']])
+
+print(e1[['aatie']])
+
+```
+
+This now looks all correct! Great. Let's go ahead and turn all of these into igraph objects so that we can start looking at visuals of these objects and calucluating the variables of interest that require the use of igraph (e.g., degree centrality, betweenness). One way we can do this is through creating iGraph objects (this is how Vacca does it in his tutorial, Till Krenz also has an igraph tutorial)
+https://egor.tillt.net/articles/using_egor.html#igraph-network-plotting
+
+
+```{r}
+
+##egor object is immediately converted into a list of igraph networks
+graph.list <- egor::as_igraph(e1)
+                              
+                              #check this out
+gr <- graph.list[["3"]]
+
+#in gr.list, igraph ego-networks do not include the ego as a node. we can create the same list, but include a node for ego in each igraph ego-network using the below code. 
+
+gr.list.ego <- egor::as_igraph(e1, include.ego = TRUE)
+gr.list.ego
+
+```
+
+Confirm that all of the the names of each object in the list is the name of the egoID
+```{r}
+names(graph.list)
+```
+
+
+Using these two igraph lists (the list that include the egos, and the list that does not) we can use these data to calculate other values of interest to us, such as alter degree (or, the number of ties that each alter has). Speicfically, in igraph we calculate degree centrality and various forms of betweenness centrality. The link to the kinds of centrality we can look at are here. 
+https://r.igraph.org/reference/index.html
+
+https://r.igraph.org/reference/cluster_edge_betweenness.html
+
+
+```{r}
+###calculating the degree centrality of each alter
+
+##first we create an empty dataframe that will use degree as is calculated form the igraph objects
+degree.alter <- purrr::map(graph.list, igraph::degree) ### make sure you use the igraph list you created that EXCLUDES THE EGO 
+
+degree.alter.df <- data.frame(egoID = integer(),
+                            altID = character(),
+                            degree = integer(),
+                            stringsAsFactors = TRUE)
+
+convert_nested_element_to_row <- function(egoID, nested_element) {
+  data.frame(egoID = egoID,
+             alterID = names(nested_element),
+             degree = nested_element,
+             stringsAsFactors = FALSE)
+}
+
+##then, we tell R to fill in the empty frame with the information about ego degree
+for (egoID in seq_along(degree.alter)) {
+  nested_element <- degree.alter[[egoID]]
+  degree.alter.df <- rbind(degree.alter.df, convert_nested_element_to_row(egoID, nested_element))
+}
+
+#we name our rows
+rownames(degree.alter.df) <- NULL
+
+##now we check and make sure this looks right
+head(degree.alter.df)
+
+#and we can save this dataframe as a csv file and merge it with other data for analyses. 
+write.csv(degree.alter.df, "degreealterdf.csv", row.names = FALSE)
+
+```
+
+
+We can begin calculating level2 variables that are of interest to us in R. For example, we might be interested in finding the average age of alters in ego's network or the total number of alter's in the ego's network. 
+
+```{r}
+##First, go ahead and write the alter tibble that is an object in "e1" into a data frame so its a little easier to manage
+atler_long_df <- e1$alter
+alter_long_df <- as.data.frame(atler_long_df)
+
+### for some variables, you need to tell R that they should treat these variables as factors or as numeric, and we need to tell it to try to treat it as numeric or factors rather than categorical
+
+alter_long_df <- type.convert(alter_long_df, as.is = FALSE)
+
+#now its a dataframe with the proper variabel types, this is a bit easier to manage. 
+#let's make a level 2 variables for the mean age of alters in the network. 
+
+level2 <-alter_long_df %>%
+group_by(.egoID) %>%
+  summarize(
+    total_alters = n(),#this is the total number of alters in the network
+    mean_age = mean(alt1_age, na.rm= TRUE), #this is the average age of all alters
+  )
+
+head(level2)
+``` 
+
+We may have some variables that are a little bit more involved to compute. For example, perhaps we want a count of the the number of alters in the network that have perpetrated acts of verbal harassment against the ego, the proportion of the network that has perpetrated harassment against the ego, and whether or not the alter is in a network where an ego has perpetrated harassment. 
+
+```{r}
+#when we have factor variables this gets a bit tougher. Lets now create a variable where we can count the number of people within each data set that  
+
+count_altvicp1 <- atler_long_df %>%
+  filter (alt1_vp_1 %in% c("Once","Twice", "3 or more times")) %>% #filter the levels we want to count
+  group_by (.egoID) %>%
+  summarize (count_altvicp1 = n())
+count_altvicp1  <- type.convert(count_altvicp1, as.is = FALSE)  
+
+#now we have a dataset that counts the number of people who have perpetrated this kind of perpetratation against a given alter, but we do not have zero values. So, we need to add those back in.... first we merge this dataset with our other left_join variables
+
+level2 <- left_join(level2, count_altvicp1, by = ".egoID")
+
+# Replace NA in level2 with 0 for egoIDs with no relevant levels
+level2$count_altvicp1[is.na(level2$count_altvicp1)] <- 0
+
+##now, instead, lets get the proportion of the alters in the network who have perpetrated any form of victimization
+
+prop_altvicp1 <- level2 %>%
+  group_by(.egoID) %>%
+  summarize (
+    proportion_altvicp1 = count_altvicp1/total_alters 
+  )
+
+##now merge the above dataset with the level 2 dataset
+
+level2 <- left_join(level2, prop_altvicp1, by = ".egoID")
+
+##now, maybe I would like to dichotomize this variable, such that for each alter who has any victimization perpetration in their network, they would receive a score of 1, and, for those who have no victimization in their network, they would receive a score of 1.
+
+level2 <- level2 %>% 
+  mutate(vict1_dichotomzed = ifelse(proportion_altvicp1>0, 1, 0))
+
+
+## no need to merge back into our level 2 dataset here, as we did this operation within this dataset and we do not need to add it back in!
+
+```
+
+Once we had these types of variables, we can merge this data, level2, back into our larger dataset to be able to complete our HLM analyses. 
+
+```{r}
+##first, merge the degree dataset with the alter_long_df ... something funky happened and our variable names got renamed, so lets make sure all the names of our ID variables (ego and alter) are standardized. 
+
+level2 <- level2 %>%
+  rename (egoID = .egoID)
+
+alter_long_df <- alter_long_df %>%
+  rename (egoID = .egoID)
+
+alter_long_df <- alter_long_df %>%
+  rename (altID = .altID)
+
+degree.alter.dataf <- degree.alter.df %>%
+  rename (altID = alterID)
+
+ego_density <- ego_density %>%
+  rename (egoID = .egoID)
+ego_density$egoID <- as.integer(ego_density$egoID)
+
+#now merge with degree-- instruct r to merge based on a matching variable... you also need to make sure that this is the same type of variables across data sets
+
+degree.alter.dataf$altID <- as.integer(degree.alter.dataf$altID)
+
+long_withlevel2 <-left_join(alter_long_df, degree.alter.dataf)
+
+long_withlevel2 <-left_join(long_withlevel2, level2)
+
+long_withlevel2 <-left_join(long_withlevel2, ego_density)
+
+#make sure we merge the dataset in with our ego_density data frame as well.
+
+
+
+```
+
+Now, we can merge these data into the larger ego information dataset and export this dataframe as a CSV file so you could conduct analyses in your stats package of choirce (for Nathan this is SAS). 
+
+```{r}
+
+full_long_dataset <-left_join(ego_vars,long_withlevel2)
+write.csv(full_long_dataset, "full_long_dataset.csv", row.names= FALSE)
+
+```
+
+
+If you feel confident running HLMs in R, you can also do that using the lme4 package. Below I include some examples for how to write these models and how you will be able to examine intra-class correlations as well. 
+
+```{r}
+##make sure that they varibales are the correct type
+full_long_dataset <- type.convert(full_long_dataset, as.is = FALSE)
+full_long_dataset$alt1_rasi <- as.numeric(full_long_dataset$alt1_rasi)
+full_long_dataset$density <- as.numeric (full_long_dataset$density)
+
+##create a null model
+summary(model_null <- lmer(alt1_rasi ~ 1 + (1 | egoID),  data=full_long_dataset, REML= TRUE, 
+                       control = lmerControl(optimizer ="Nelder_Mead")))
+
+#install.packages("mlmhelpr")
+library(mlmhelpr)
+null_icc <- icc(model_null)
+
+#and begin model building, here I included a level one variable
+
+summary(model_1 <- lmer(alt1_rasi ~ 1 + degree + (1 | egoID),  data=full_long_dataset, REML= TRUE,
+                       control = lmerControl(optimizer ="Nelder_Mead")))
+
+#and add a second variable, the proportion of the alters who victimized the ego
+
+summary(model_2 <- lmer(alt1_rasi ~ 1 + degree + proportion_altvicp1 + (1 | egoID),
+                        data=full_long_dataset, REML= TRUE, control = lmerControl(optimizer="Nelder_Mead")))
+
+#and add a second variable, this one level 2 the proportion of the alters who victimized the ego
+
+summary(model_3 <- lmer(alt1_rasi ~ 1 + degree + proportion_altvicp1 + density + (1 | egoID), data=full_long_dataset, 
+                        REML= TRUE, control = lmerControl(optimizer ="Nelder_Mead")))
+
+```
+
+
+We can use the below shiny graph to make network visualizations as well!
+
+```{r}
+#install.packages("shiny")
+library(shiny)
+egor_vis_app()
+
+```
+
